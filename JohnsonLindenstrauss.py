@@ -1,7 +1,8 @@
 """
 A dimensionality reduction matrix
 """
-from numpy import log 
+import numpy as np
+import random
 import math
 
 class JohnsonLindenstrauss:
@@ -32,7 +33,7 @@ class JohnsonLindenstrauss:
         if not self.valid_epsilon(epsilon=epsilon):
             print(f"WARNING: invalid epsilon {epsilon} not in range (0, 1)")
 
-        numerator = 8 * log(n)
+        numerator = 8 * np.log(n)
         denominator = epsilon * epsilon
         return math.ceil(numerator / denominator)
     
@@ -42,8 +43,15 @@ class JohnsonLindenstrauss:
         section 4.4 of the following lecture notes: 
         https://www.cs.unm.edu/~saia/classes/506-s26/lec/HighDim+JLProjection.pdf
         """
+        lower = -1 * math.sqrt(1/d)
+        upper = math.sqrt(1/d)
+        options = [lower,upper]
+        out = np.zeros((d,n))
+        for i in range(d):
+            for j in range(n):
+                out[i][j] = random.choice(options)
+        return out
 
-        #TODO 
 
     def reduce_dimension(self, A, epsilon, d=None):
         """
@@ -70,4 +78,4 @@ class JohnsonLindenstrauss:
         elif d_lower_bound > d:
             print(f"WARNING: d_lower_bound = {d_lower_bound} > {d} = d")
         
-        return A @ self.jl_matrix(A.shape[0], d)
+        return self.jl_matrix(A.shape[0], d) @ A
