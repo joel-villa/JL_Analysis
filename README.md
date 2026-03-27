@@ -7,3 +7,6 @@ Valerie and Joel, dimensionally reducing
 ## To update Sparsification_Research Directory
 `cd Sparsification_Research`
 `git pull origin main`
+
+# TODO: rework things w/ updated Sparsification_Research
+# TODO: refactor code to have src folder
