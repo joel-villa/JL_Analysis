@@ -21,7 +21,7 @@ class JohnsonLindenstrauss:
         if seed is None:
             seed = np.random.randint(0, 100)
         self.seed = seed
-    def get_entry_vals(self, n):
+    def jl_entry_vals(self, n):
         """
         Based on the JL Projection described in Section 5.2 of Jared Saia's 
         lecture on JL Projection
@@ -113,7 +113,7 @@ class JohnsonLindenstrauss:
         col_seed = self.get_col_seed(col_num)
         rng = np.random.default_rng(seed=col_seed)
 
-        return rng.choice(self.get_entry_vals(d), size=d)
+        return rng.choice(self.jl_entry_vals(d), size=d)
     
     def reduce(self, A, epsilon, d = None):
         """
@@ -140,7 +140,7 @@ class JohnsonLindenstrauss:
         https://www.cs.unm.edu/~saia/classes/506-s26/lec/HighDim+JLProjection.pdf
         """
         rng = np.random.default_rng(self.seed)
-        return rng.choice(self.get_entry_vals(self.d), 
+        return rng.choice(self.jl_entry_vals(self.d), 
                                        size=(self.d, self.n))
 
     def get_b(self, A, x, epsilon, d=None):
