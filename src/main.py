@@ -1,6 +1,5 @@
 from .JohnsonLindenstrauss import JohnsonLindenstrauss
 import numpy as np
-# from .checking_stuff import *
 """
 TODO: 
 (1) Code up some Johnson Lindenstrauss algorithm(s)?
@@ -29,7 +28,7 @@ def test_one():
         xs = np.random.rand(num_xs, A.shape[0]) # randomly generated x vectors
         for x in xs:
             print(f"{name}: {A.shape[0]}x{A.shape[0]}")
-            approx,orig = jonny.reduce_dimension(A,x,eps,d)
+            approx,orig = jonny.get_b(A,x,eps,d)
             approx_norm = np.linalg.norm(approx, ord=2)
             orig_norm = np.linalg.norm(orig,ord=2)
             print(abs(approx_norm - orig_norm)/orig_norm)

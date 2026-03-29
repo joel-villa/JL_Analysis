@@ -35,23 +35,6 @@ class JohnsonLindenstrauss:
         lower = -1 * math.sqrt(1/n)
         upper = math.sqrt(1/n)
         return [lower,upper]
-    def get_col_seed(self, col_num):
-        """
-        Get the i'th column seed of a JL projection matrix
-        col - column number
-        RETURN: column seed
-        """
-        return col_num + self.seed
-    
-    def get_ith_col(self, col_num, d):
-        """
-        Get i'th column of JL projection matrix (JL matrix is dxn)
-
-        col_num - column number
-        RETURN: generated row
-        """
-        col_seed = self.get_col_seed(col_num)
-        return  
 
     def valid_epsilon(self, epsilon):
         """
@@ -105,6 +88,26 @@ class JohnsonLindenstrauss:
             print(f"WARNING: d_lower_bound = {d_lower_bound} > {d} = d")
         return d
     
+    def get_col_seed(self, col_num):
+        """
+        Get the i'th column seed of a JL projection matrix
+        col - column number
+        RETURN: column seed
+        """
+        return col_num + self.seed
+    
+    def get_ith_col(self, col_num, d):
+        """
+        Get i'th column of JL projection matrix (JL matrix is dxn)
+
+        col_num - column number
+        RETURN: generated column
+        """
+        col_seed = self.get_col_seed(col_num)
+        rng = np.random.default_rng(seed=col_seed)
+
+        return rng.choice(self.get_entry_vals(d), size=d)
+        
     def jl_matrix(self, d, n):
         """
         Randomly generate a matrix of dimensions (dxn) in the way outlined in
@@ -112,6 +115,34 @@ class JohnsonLindenstrauss:
         https://www.cs.unm.edu/~saia/classes/506-s26/lec/HighDim+JLProjection.pdf
         """
         return self.ran_num_gen.choice(self.get_entry_vals(d), size=(d, n))
+
+    def get_b(self, A, x, epsilon, d=None):
+        """
+        Reduce the dimension of A as much as possible given some epsilon,
+        if the new dimension is not given, assume reducing as extremely as 
+        possible. If new dimension provided, check it is valid, if not print a 
+        warning
+
+        A       - original matrix (nxn)
+        x       - vector to compare matrix vector product
+        epsilon - some factor of allowed error
+        d       - the new dimension of matrix
+
+        RETURN: 
+            -The approximation of Ax given by P*(Ax)
+            -The original Ax for comparison
+        """
+        n = A.shape[0]
+        d = self.check_params(d, n, epsilon)
+        
+        JLM = self.jl_matrix(d, n)
+        
+        print(f"JLM dim: {JLM.shape}, A dim: {A.shape}, x dim: {x.shape}")
+
+        original = A @ x
+        approx = JLM @ original
+        
+        return approx, original
     
     def jl_matrix_product(self, A, d, eps) :
 
@@ -144,30 +175,3 @@ class JohnsonLindenstrauss:
         for c in range(col) : result = rng.choice(options)
         return result
     
-    def reduce_dimension(self, A, x, epsilon, d=None):
-        """
-        Reduce the dimension of A as much as possible given some epsilon,
-        if the new dimension is not given, assume reducing as extremely as 
-        possible. If new dimension provided, check it is valid, if not print a 
-        warning
-
-        A       - original matrix (nxn)
-        x       - vector to compare matrix vector product
-        epsilon - some factor of allowed error
-        d       - the new dimension of matrix
-
-        RETURN: 
-            -The approximation of Ax given by P*(Ax)
-            -The original Ax for comparison
-        """
-        n = A.shape[0]
-        d = self.check_params(d, n, epsilon)
-        
-        JLM = self.jl_matrix(d, n)
-        
-        print(f"JLM dim: {JLM.shape}, A dim: {A.shape}, x dim: {x.shape}")
-
-        original = A @ x
-        approx = JLM @ original
-        
-        return approx, original
