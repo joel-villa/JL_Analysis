@@ -8,5 +8,5 @@ Valerie and Joel, dimensionally reducing
 `cd Sparsification_Research`
 `git pull origin main`
 
-# TODO: rework things w/ updated Sparsification_Research
-# TODO: refactor code to have src folder
+## To run main:
+python -m src.main
