@@ -21,7 +21,7 @@ class JohnsonLindenstrauss:
         if seed is None:
             seed = np.random.randint(0, 100)
         self.seed = seed
-    def jl_entry_vals(self, n):
+    def jl_entry_vals(self):
         """
         Based on the JL Projection described in Section 5.2 of Jared Saia's 
         lecture on JL Projection
@@ -32,8 +32,8 @@ class JohnsonLindenstrauss:
 
         RETURN: [-sqrt(1/n), sqrt(1/n)]
         """    
-        lower = -1 * math.sqrt(1/n)
-        upper = math.sqrt(1/n)
+        lower = -1 * math.sqrt(1/self.d)
+        upper = math.sqrt(1/self.d)
         return [lower,upper]
 
     def valid_epsilon(self):
@@ -103,7 +103,7 @@ class JohnsonLindenstrauss:
         """
         return col_num + self.seed
     
-    def get_col(self, col_num, d):
+    def get_col(self, col_num):
         """
         Get i'th column of JL projection matrix (JL matrix is dxn)
 
@@ -113,7 +113,7 @@ class JohnsonLindenstrauss:
         col_seed = self.get_col_seed(col_num)
         rng = np.random.default_rng(seed=col_seed)
 
-        return rng.choice(self.jl_entry_vals(d), size=d)
+        return rng.choice(self.jl_entry_vals(), size=self.d)
     
     def reduce(self, A, epsilon, d = None):
         """
@@ -127,11 +127,18 @@ class JohnsonLindenstrauss:
 
         RETURN: PA, where P(dxn) -> PA (dxn)
         """
-        n = A.shape[0]
-        d = self.check_params(d, n, epsilon)
+        self.epsilon = epsilon
+        self.n = A.shape[0]
+        self.d = d
+        self.check_params() # This call updates d
 
-        # for row, col in 
-        
+        PA = np.zeros(shape=(self.d, self.n))
+
+        # storing PA as a dictionary with multiple keys per value
+        PA_dict = {}
+
+        for row, col, val in zip(A.row, A.col, A.data):
+            P_col = self.get_col(col)
         
     def jl_matrix(self):
         """
@@ -140,8 +147,8 @@ class JohnsonLindenstrauss:
         https://www.cs.unm.edu/~saia/classes/506-s26/lec/HighDim+JLProjection.pdf
         """
         rng = np.random.default_rng(self.seed)
-        return rng.choice(self.jl_entry_vals(self.d), 
-                                       size=(self.d, self.n))
+        return rng.choice(self.jl_entry_vals(), 
+                          size=(self.d, self.n))
 
     def get_b(self, A, x, epsilon, d=None):
         """
