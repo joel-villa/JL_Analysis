@@ -137,8 +137,13 @@ class JohnsonLindenstrauss:
         # storing PA as a dictionary with multiple keys per value
         PA_dict = {}
 
-        for row, col, val in zip(A.row, A.col, A.data):
+        for _, col, val in zip(A.row, A.col, A.data):
             P_col = self.get_col(col)
+            for row, P_val in enumerate(P_col):
+                PA_r_c_partial = P_val * val
+                #TODO: finish this, dictionary may not be correct approach
+                new_dict = dict.fromkeys([row, col], PA_r_c_partial)
+
         
     def jl_matrix(self):
         """
