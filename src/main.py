@@ -9,7 +9,7 @@ TODO:
 from Sparsification_Research.src.SSGetter import SSGetter
 from Sparsification_Research.src.MatrixChecker import MatrixChecker
 
-def test_one():
+def test_one(eps, d):
     # MATS = ["494_bus", "662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"]
     MATS = ["662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"]
     # MATS = ["m3plates"]
@@ -19,8 +19,7 @@ def test_one():
     ssgetter = SSGetter()
 
     mats = ssgetter.get_by_name(names=MATS)
-    eps = 0.5
-    d = 500
+
     jonny = JohnsonLindenstrauss()
     
     mc = MatrixChecker()
@@ -33,8 +32,35 @@ def test_one():
             orig_norm = np.linalg.norm(orig,ord=2)
             print(abs(approx_norm - orig_norm)/orig_norm)
     
-        
-        
+def jl_validity(eps, d):
+    # MATS = ["494_bus", "662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"]
+    MATS = ["662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"]
+    # MATS = ["m3plates"]
+    num_xs = 1
+
+    
+    ssgetter = SSGetter(in_csr=False)
+
+    mats = ssgetter.get_by_name(names=MATS)
+    jonny = JohnsonLindenstrauss()
+    
+    mc = MatrixChecker()
+    for name, A in mats.items():
+        print(f"{name}: {A.shape[0]}x{A.shape[0]}")
+        xs = np.random.rand(num_xs, A.shape[0]) # randomly generated x vectors
+        A_reduced = jonny.reduce(A, eps, d)
+
+        print(f"A_reduced.shape = {A_reduced.shape}")
+
+        for x in xs:
+            b_approx = A_reduced @ x
+            b = A @ x
+
+            approx_norm = np.linalg.norm(b_approx, ord=2)
+            orig_norm = np.linalg.norm(b,ord=2)
+            print(abs(approx_norm - orig_norm)/orig_norm)      
 
 if __name__ == "__main__":
-    test_one()
+    epsilon = 0.5
+    d = 500
+    jl_validity(epsilon, d)

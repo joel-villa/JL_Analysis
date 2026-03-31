@@ -121,6 +121,9 @@ class JohnsonLindenstrauss:
         reducing as extremely as possible. If new dimension provided, check it 
         is valid, if not print a warning
 
+        TODO: make faster by not doing row-wise accesing by doing AP rather than
+        PA
+
         A       - original matrix (nxn) in COO format
         epsilon - some factor of allowed error
         d       - the new dimension of matrix
@@ -134,15 +137,13 @@ class JohnsonLindenstrauss:
 
         PA = np.zeros(shape=(self.d, self.n))
 
-        # storing PA as a dictionary with multiple keys per value
-        PA_dict = {}
+        for col_A, val in zip(A.col, A.data):
+            P_col = self.get_col(col_A)
+            for row_P, P_val in enumerate(P_col):
+                # 
+                PA[row_P][col_A] += P_val * val
 
-        for _, col, val in zip(A.row, A.col, A.data):
-            P_col = self.get_col(col)
-            for row, P_val in enumerate(P_col):
-                PA_r_c_partial = P_val * val
-                #TODO: finish this, dictionary may not be correct approach
-                new_dict = dict.fromkeys([row, col], PA_r_c_partial)
+        return PA
 
         
     def jl_matrix(self):
