@@ -14,3 +14,4 @@ python -m src.main
 ## TODO
 - Check top right eigenvector preservation
 - Behavior on Sparse matrices
+- Inverse of Johnson Lindenstrauss: Moore-Penrose Psuedo-Inverse -> Singular Value Decomposition
