@@ -48,17 +48,21 @@ class JohnsonLindenstrauss:
 
     def dimension_lower_bound(self):
         """
-        Get the lower bound of the dimension for the Johnson Lindenstrauss 
-        algorithm s.t. 
-        (1 - e)||u - v||^2 <= ||f(u) - f(v)||^2 <= (1 + e)||u - v||^2
-        via the Johnson Lindenstrauss Lemma
+        Get lower bound of the dimension for the Johnson Lindenstrauss reduction 
+
+        Lowerbound calculated via referencing Theorem 3 from the following 
+        lecture notes: 
+        https://www.cs.unm.edu/~saia/classes/506-s26/lec/lec-HighDim+JLProjection.pdf
+
+
+        To approximately preserce distance vectors:
+
+        (1 - e)|u - v| <= |f(u) - f(v)| <= (1 + e)|u - v|
         
-        k > 8(ln n) / ε^s
+        reduced dimension is (27 log n) / ε^s
 
-        n       - the original dimension
-        epsilon - the amount of allowed error 
-
-        RETURN - the lower bound of the dimension (inclusive)
+        
+        RETURN - lower bound of the reduced dimension (inclusive)
         """
         epsilon = self.epsilon
         n = self.n
@@ -66,7 +70,7 @@ class JohnsonLindenstrauss:
         if not self.valid_epsilon():
             print(f"WARNING: invalid epsilon {epsilon} not in range (0, 1)")
 
-        numerator = 8 * np.log(n)
+        numerator = 27 * np.log2(n)
         denominator = epsilon * epsilon
         return math.ceil(numerator / denominator)
     
@@ -86,7 +90,7 @@ class JohnsonLindenstrauss:
 
         if not self.valid_epsilon():
             raise ValueError(f"Epsilon must be in range (0, 1), {epsilon} invalid")
-
+        
         d_lower_bound = self.dimension_lower_bound()
 
         if d is None:
