@@ -10,9 +10,7 @@ from Sparsification_Research.src.SSGetter import SSGetter
 from Sparsification_Research.src.MatrixChecker import MatrixChecker
 
 def test_one(eps, d):
-    # MATS = ["494_bus", "662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"]
-    MATS = ["662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"]
-    # MATS = ["m3plates"]
+    MATS = ["662_bus"]
     num_xs = 1
 
     
@@ -33,18 +31,17 @@ def test_one(eps, d):
             print(abs(approx_norm - orig_norm)/orig_norm)
     
 def jl_validity(eps, d):
-    # MATS = ["494_bus", "662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"]
-    MATS = ["662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"]
-    # MATS = ["m3plates"]
+    # MATS = ["494_bus", "662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"] #some matrices that converged w/ Jacobi
+    MATS = ["662_bus"]
     num_xs = 1
 
     
-    ssgetter = SSGetter(in_csr=False)
+    ssgetter = SSGetter(in_csr=False, row_bounds=(600, 700))
 
-    mats = ssgetter.get_by_name(names=MATS)
+    # mats = ssgetter.get_next(1)
+    mats = ssgetter.get_by_name(MATS)
     jonny = JohnsonLindenstrauss()
     
-    mc = MatrixChecker()
     for name, A in mats.items():
         print(f"{name}: {A.shape[0]}x{A.shape[0]}")
         xs = np.random.rand(num_xs, A.shape[0]) # randomly generated x vectors
@@ -63,4 +60,5 @@ def jl_validity(eps, d):
 if __name__ == "__main__":
     epsilon = 0.5
     d = 500
+    test_one(epsilon, d)
     jl_validity(epsilon, d)

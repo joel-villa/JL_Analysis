@@ -137,11 +137,12 @@ class JohnsonLindenstrauss:
 
         PA = np.zeros(shape=(self.d, self.n))
 
-        for col_A, val in zip(A.col, A.data):
-            P_col = self.get_col(col_A)
-            for row_P, P_val in enumerate(P_col):
+        for row_A, col_A, val_A in zip(A.row, A.col, A.data):
+            # Column of P multiplied by the row of A
+            P_column = self.get_col(row_A)
+            for row_P, val_P in enumerate(P_column):
                 # 
-                PA[row_P][col_A] += P_val * val
+                PA[row_P][col_A] += val_P * val_A
 
         return PA
 

@@ -10,3 +10,7 @@ Valerie and Joel, dimensionally reducing
 
 ## To run main:
 python -m src.main
+
+## TODO
+- Check top right eigenvector preservation
+- Behavior on Sparse matrices
