@@ -23,6 +23,26 @@ class Tester:
         self.save_fig = save_fig
         self.show_fig = show_fig
 
+    def top_eig(self, A, seed=42):
+        """
+        Get the top eigenvector of the square matrix A, given a seed
+
+        A    - square matrix
+        seed - seed for generating initial guess
+
+        RETURN: top eigenvector
+        """
+
+        # Random number generator:
+        r_gen = np.random.default_rng(seed=seed)
+
+        n, _ = A.shape
+
+        # Choose the initial vector x, 1 by n
+        v0 = r_gen.normal(loc=0.0, scale=0.01, size=n) # Initial guess is close to zero 
+
+        _, e = eigs(A, k=1, v0=v0) #k = 1 -> only get top eigenvector
+
     def top_left_eigenvector(self, A):
         """
         A - a (dxn) matrix where d << n
@@ -34,9 +54,7 @@ class Tester:
         # the dxd matrix for computing top left eigenvector
         M = A @ A.T
 
-        _, e = eigs(M, k=1, v0=v0) #k = 1 -> only get top eigenvector
-        
-        return e
+        return self.top_eig(M)
 
     def top_right_eigenvector(self, A, top_left):
         """
@@ -48,6 +66,8 @@ class Tester:
         top_left * A gives top right eigenvector of A
         """
 
+        return top_left @ A
+
     def diff_top_right(self, A, A_reduced):
         """
         A - (nxn) original matrix
@@ -58,15 +78,25 @@ class Tester:
 
         |v - v_reduced| / |v|
         """
-    
-    def reduce(self, A, d, epsilon):
-        """
-        A       - (nxn) matrix
-        d       - d << n
-        epsilon - degree of allowed error
 
-        RETURN: (dxn) matrix generated randomly via JL Method
-        """
+        top_left = self.top_left_eigenvector(A_reduced)
+        pos_top_right = self.top_right_eigenvector(A_reduced, top_left)
+        orig_eig = self.top_eig(A)
+
+        neg_top_right = -1 * pos_top_right #Still a top eigenvector of A_reduced
+
+        difference_pos = orig_eig - pos_top_right
+        difference_neg = orig_eig - neg_top_right
+
+        # Test the difference of both the eigenvector and the eigenvector flipped
+        norm_of_diff_pos = norm(difference_pos)
+        norm_of_diff_neg = norm(difference_neg)
+
+        # Original norm
+        norm_original = norm(orig_eig)
+
+        # Take minimum
+        return min(norm_of_diff_pos, norm_of_diff_neg) / norm_original
 
     def test_jl(self, A, d, epsilon):
         """
@@ -80,12 +110,15 @@ class Tester:
         |v - v_reduced| / |v|
         """
 
+        jl = self.jl
+        A_reduced = jl.reduce(A=A, epsilon=epsilon, d=d)
+        return self.diff_top_right(A, A_reduced)
+
+
     def compare_eigenvectors(self, d_reduced, epsilon=0.5, num_iter = 10):
         """
         Test all the matrices w/ the various d_reduced values
         """
-        
-        jl = self.jl
         ss_getter = SSGetter(in_csr=False)
         mats = ss_getter.get_by_name(self.mats) 
 
@@ -96,7 +129,9 @@ class Tester:
             diffs = []
             for d in d_reduced:
                 diff = []
-                for _ in num_iter:
+                for _ in range(num_iter):
+                    # Reseed Johnson Lindenstrauss and rerun test
+                    self.jl.reseed()
                     diff.append(self.test_jl(A, d, epsilon))
                 diff = np.mean(diff)
                 diffs.append(diff)
