@@ -70,7 +70,9 @@ class JohnsonLindenstrauss:
         if not self.valid_epsilon():
             print(f"WARNING: invalid epsilon {epsilon} not in range (0, 1)")
 
-        numerator = 27 * np.log2(n)
+        #TODO find valid C
+        C = 1
+        numerator = C * np.log2(n)
         denominator = epsilon * epsilon
         return math.ceil(numerator / denominator)
     
