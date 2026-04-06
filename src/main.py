@@ -1,4 +1,5 @@
 from .JohnsonLindenstrauss import JohnsonLindenstrauss
+from .Tester import Tester
 import numpy as np
 from scipy import linalg
 """
@@ -164,7 +165,10 @@ def jl_validity(eps, d):
         print(f"average distance of {NUM_XS} randomly generated vectors {np.mean(res)}")   
 
 if __name__ == "__main__":
+    jl = JohnsonLindenstrauss()
     epsilon = 1/64
-    d = 500
-    test_three(epsilon, d)
-    jl_validity(epsilon, d)
+    n = 8
+    ds = [492,493,494]
+    mats = ["494_bus"] 
+    test = Tester(jl,mats=mats, save_fig=False, show_fig=True)
+    test.compare_eigenvectors(ds, epsilon, n)
