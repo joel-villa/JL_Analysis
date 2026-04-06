@@ -168,6 +168,7 @@ if __name__ == "__main__":
     jl = JohnsonLindenstrauss()
     epsilon = 1/64
     n = 8
-    ds = [2, 4, 8, 16, 32, 64, 128]
-    test = Tester(jl, save_fig=False, show_fig=True)
+    ds = [492,493,494]
+    mats = ["494_bus"] 
+    test = Tester(jl,mats=mats, save_fig=False, show_fig=True)
     test.compare_eigenvectors(ds, epsilon, n)
