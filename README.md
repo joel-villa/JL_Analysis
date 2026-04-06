@@ -1,5 +1,5 @@
 # JL_Analysis
-Valerie and Joel, dimensionally reducing 
+We dimensionally reduce
 
 ## To load Sparsification_Research Repository Run
 `git submodule update --init --recursive`
