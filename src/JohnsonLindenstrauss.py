@@ -18,9 +18,18 @@ class JohnsonLindenstrauss:
 
         seed    - Seed for generating a JL matrix
         """
+        self.reseed(seed)
+
+    def reseed(self, seed=None):
+        """
+        Reseeds the JL matrix - be careful calling this
+
+        seed - seed which determines JL matrix entries
+        """
         if seed is None:
             seed = np.random.randint(0, 100)
         self.seed = seed
+
     def jl_entry_vals(self):
         """
         Based on the JL Projection described in Section 5.2 of Jared Saia's 
