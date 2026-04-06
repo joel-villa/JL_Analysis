@@ -43,6 +43,8 @@ class Tester:
 
         _, e = eigs(A, k=1, v0=v0) #k = 1 -> only get top eigenvector
 
+        return e
+
     def top_left_eigenvector(self, A):
         """
         A - a (dxn) matrix where d << n
@@ -63,10 +65,10 @@ class Tester:
 
         RETURN: top right eigenvector
 
-        top_left * A gives top right eigenvector of A
+        top_left^T * A gives top right eigenvector of A
         """
 
-        return top_left @ A
+        return top_left.T @ A
 
     def diff_top_right(self, A, A_reduced):
         """
