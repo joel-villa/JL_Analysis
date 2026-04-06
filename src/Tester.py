@@ -3,6 +3,7 @@ Tests the behavior of a JL Reduction
 """
 from Sparsification_Research.src.SSGetter import SSGetter
 from scipy.linalg import norm # 2-norm by default
+from scipy.sparse.linalg import eigs
 import numpy as np
 from .plot import *
 
@@ -30,6 +31,12 @@ class Tester:
 
         A * A^T is a (dxd) matrix, get its top eigenvector via power iteration
         """
+        # the dxd matrix for computing top left eigenvector
+        M = A @ A.T
+
+        _, e = eigs(M, k=1, v0=v0) #k = 1 -> only get top eigenvector
+        
+        return e
 
     def top_right_eigenvector(self, A, top_left):
         """
