@@ -160,6 +160,30 @@ class JohnsonLindenstrauss:
                 PA[row_P][col_A] += val_P * val_A
 
         return PA
+    
+    def reduce_vect(self, x, epsilon, d=None):
+        """
+        Reduce the vector x from length n to length d
+
+        x - (nx1) vector
+        d - new dimension of x after reduction
+        epsilon - some degree of allowed error
+        """
+        self.epsilon = epsilon
+        self.n = x.shape
+        self.d = d
+        self.check_params() # This call updates d
+
+        # The d dimensional vector result
+        Px = np.zeros(shape=(self.d))
+
+        for i in range(self.n):
+            # Column of P multiplied by a row of x 
+            P_column = self.get_col(i)
+            for p in P_column:
+                Px[i] += p * x[i]
+
+        return Px
 
         
     def jl_matrix(self):

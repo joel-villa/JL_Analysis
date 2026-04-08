@@ -1,6 +1,8 @@
 """
 Tests the behavior of a JL Reduction
 """
+from .JohnsonLindenstrauss import JohnsonLindenstrauss
+
 from Sparsification_Research.src.SSGetter import SSGetter
 from scipy.linalg import norm # 2-norm by default
 from scipy.sparse.linalg import eigs
@@ -139,3 +141,58 @@ class Tester:
                 diffs.append(diff)
             mat_dict[name] = diffs
         plot1(mat_dict, d_reduced, epsilon, num_iter, self.save_fig, self.show_fig)
+
+    def test_symm_reduct(self, A, ds, epsilons):
+        """
+        TODO
+        Test if reducing A down to a symmetric dxd matrix preserves top 
+        eigenvector 
+
+        This preservation will be compared to the top eigenvector of A reduced 
+        down to d
+
+        A        - an (nxn) matrix
+        ds       - a list of dimension s.t. for all d in ds, d << n
+        epsilons - a list of allowable error (not implemented rn)
+        """
+    
+    def test_jl_norm_preservation(self, ns, ds, epsilon, num_iter):
+        """
+        ns      - the length of the original vector x
+        ds      - the length of the dimensionally reduced Px
+        epsilon - some degree of allowable error (TODO: implement epsilon 
+                   properly)
+        num_iter - the number of iterations, over which the average and worst
+                   behaving are tracked
+
+        Let P represent the jl transformation matrix
+        The following code tests that |Px| ~ |x|
+        Where x is a (nx1) vector, and P is a (dxn) matrix, s.t. d << n 
+        """
+        jl = self.jl
+
+        for n in ns:
+            # randomly generate num_iter vectors of length n
+            xs = np.random.rand(num_iter, n)
+            for d in ds:
+                worst = 0
+                diffs = []
+                for x in xs:
+                    x_reduced = jl.reduce_vect(x, epsilon, d)
+
+                    #Track relative difference
+                    diff = norm(x - x_reduced) / norm(x)
+                    diffs.append(diff) 
+                    if (diff > worst):
+                        worst = diff
+        #TODO: this
+                    
+
+if __name__ == "__main__":
+    jl = JohnsonLindenstrauss()
+    epsilon = 1/64
+    n = 8
+    ds = [492,493,494]
+    mats = ["494_bus"] 
+    test = Tester(jl,mats=mats, save_fig=False, show_fig=True)
+    test.compare_eigenvectors(ds, epsilon, n)
