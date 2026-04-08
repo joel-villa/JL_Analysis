@@ -12,6 +12,7 @@ from Sparsification_Research.src.MatrixChecker import MatrixChecker
 
 
 def test_one(eps, d):
+    print("Test 1\n")
     MATS = ["662_bus"]
     num_xs = 1
 
@@ -51,12 +52,20 @@ def test_two(eps, d):
 
     mats = ssgetter.get_by_name(names=MATS)
     jonny = test_one(eps,d)
+    print("Test 2\n")
     mc = MatrixChecker()
     for name, A in mats.items():
         xs = np.random.rand(num_xs, A.shape[0]) # randomly generated x vectors
         for x in xs:
             print(f"{name}: {A.shape[0]}x{A.shape[0]}")
-            P = jonny.jl_matrix() 
+            P = jonny.jl_matrix()
+            
+            nearI = P.transpose() @ P
+            print(f"norm of P^T *P - I {np.linalg.norm(nearI - np.eye(nearI.shape[0]))}")
+
+            nearI = P @ P.transpose()
+            print(f"norm of P*P^T - I {np.linalg.norm(nearI - np.eye(nearI.shape[0]))}")
+            
             approx = P @ A @ P.transpose()
             orig = A
             print(f"approx: {approx.shape[0]}x{approx.shape[0]}")
@@ -84,6 +93,8 @@ def sparsen(A,density):
       if r > density:
         mat[i,j] =0
         nz += 1
+      elif mat[i,j] == 0:
+        nz +=1
   nnz = mat.shape[0]*mat.shape[1] - nz
   return mat,nnz
 
@@ -96,6 +107,7 @@ def test_three(eps, d):
 
     mats = ssgetter.get_by_name(names=MATS)
     jonny = test_two(eps,d)
+    print("Test 3\n")
     mc = MatrixChecker()
     for name, A in mats.items():
         xs = np.random.rand(num_xs, A.shape[0]) # randomly generated x vectors
@@ -133,6 +145,63 @@ def test_three(eps, d):
             print(f'highdim norm {highdimdiffnorm} / norm(eig(A)) {norm_oe}={highdimdiffnorm/norm_oe}')
     return jonny
 
+def test_four(eps, d):
+    '''Test sparsening JL projection matrix P'''
+    MATS = ["662_bus"]
+    num_xs = 1
+
+    
+    ssgetter = SSGetter()
+
+    mats = ssgetter.get_by_name(names=MATS)
+    jonny = test_three(eps,d)
+    print("Test 4\n")
+    mc = MatrixChecker()
+    for name, A in mats.items():
+        xs = np.random.rand(num_xs, A.shape[0]) # randomly generated x vectors
+        print(f" A nnz {A.nnz}, A entries {A.shape[0]*A.shape[1]}")
+        density = A.nnz/(A.shape[0] * A.shape[1])
+
+        for x in xs:
+            print(f"{name}: {A.shape[0]}x{A.shape[0]}")
+            P,Pnnz = sparsen(jonny.jl_matrix(), density)
+        
+            print(f" P nnz {Pnnz}, P entries {P.shape[0]*P.shape[1]}")
+            approx = P @ A @P.transpose()
+            sparse,sparsennz = sparsen(approx, density)
+            
+            nearI = P.transpose() @ P
+            print(f"norm of sparsen(P)^T *sparsen(P) - I {np.linalg.norm(nearI - np.eye(nearI.shape[0]))}")
+
+            nearI = P @ P.transpose()
+            print(f"norm of sparsen(P)*sparsen(P)^T - I {np.linalg.norm(nearI - np.eye(nearI.shape[0]))}")
+           
+            Pinv = np.linalg.pinv(P)
+            print(f"norm of sparsen(P)^+ *sparsen(P) - I {np.linalg.norm(Pinv@P - np.eye(Pinv.shape[0]))}")
+
+            print("\nP appears to be a near orthogonal matrix, and the peuedo-inverse\
+                \nis only 50% better than P^T as measured by the distance from the identity\
+                \nreferring back to test 2 we also see that sparsening the projection matrix P\
+                \nmakes P more orthogonal. recall an orthogonal matrix has the property\
+                \nAA^T=I.")
+            print(f" sparsen(P)A nnz {sparsennz}, sparsen(P)A entries {sparse.shape[0]*sparse.shape[1]}")
+
+            s_ev_tr = eig_top_right(sparse)
+            
+            orig = A
+            orig_eigenvalues = eig_top_right(orig.todense())
+            norm_oe = np.linalg.norm(orig_eigenvalues,ord=2)
+
+            #project eigenvalues
+            lowdimdiff = (P @ orig_eigenvalues) - s_ev_tr
+            highdimdiff = orig_eigenvalues - (P.transpose()@ s_ev_tr)
+            lowdimdiffnorm = np.linalg.norm(lowdimdiff, ord=2)
+            highdimdiffnorm = np.linalg.norm(highdimdiff, ord=2)
+            print(f'lowdim norm of sparsen(P)*eig(A) - eig(sparsen(P)A) {lowdimdiffnorm}')
+            print(f'highdim norm of eig(A) - sparsen(P)^T*eig(sparsen(P)A) {highdimdiffnorm}')
+            print(f'highdim norm {highdimdiffnorm} / norm(eig(A)) {norm_oe}={highdimdiffnorm/norm_oe}')
+    return jonny
+
 
 def jl_validity(eps, d):
     # MATS = ["494_bus", "662_bus", "685_bus", "1138_bus", "bcsstk21", "bcsstm25", "bcsstm39", "finan512", "jnlbrng1", "m3plates"] #some matrices that converged w/ Jacobi
@@ -166,5 +235,5 @@ def jl_validity(eps, d):
 if __name__ == "__main__":
     epsilon = 1/64
     d = 500
-    test_three(epsilon, d)
+    test_four(epsilon, d)
     jl_validity(epsilon, d)
