@@ -12,6 +12,7 @@ We dimensionally reduce
 python -m src.main
 
 ## TODO
+- Look Through Connor's Results
 - Make JL take in just epsilon, d is determined by the following: d = (C \ln n) / \epsilon^2
 - Make Tests for preservation of Dot Products, Distance Vectors, etc
 - Find apt C, from this: d = (C \ln n) / \epsilon^2
