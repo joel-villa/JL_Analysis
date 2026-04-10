@@ -107,8 +107,8 @@ class JohnsonLindenstrauss:
         if d is None:
             # No d provided, autogenerate based on A's dimensions and epsilon
             self.d = d_lower_bound
-        elif d_lower_bound > d:
-            print(f"WARNING: d_lower_bound = {d_lower_bound} > {d} = d")
+        # elif d_lower_bound > d:
+        #     print(f"WARNING: d_lower_bound = {d_lower_bound} > {d} = d")
     
     def get_col_seed(self, col_num):
         """

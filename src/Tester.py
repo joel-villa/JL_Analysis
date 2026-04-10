@@ -57,6 +57,16 @@ class Tester:
         # Take minimum
         return min(norm_of_diff_pos, norm_of_diff_neg) 
     
+    def cosine_dist(self, x, y):
+        """
+        The cosine distance of two vectors
+
+        0 -> same
+        1 -> orthogonal
+        2 -> opposite
+        """
+        return min(cosine(x, y), cosine(x, -1 * y))
+    
     def eig_diff(self, A, A_reduced):
         """
         A - (nxn) original matrix
@@ -82,8 +92,7 @@ class Tester:
         top_right = top_right.real
 
         euclidean_distance = self.euclidean_dist(orig_eig, top_right)
-        cosine_distance = min(cosine(orig_eig, top_right), cosine(orig_eig, -1 * top_right))
-        return euclidean_distance, cosine_distance
+        return euclidean_distance
 
     def test_jl(self, A, d, epsilon):
         """
@@ -111,28 +120,36 @@ class Tester:
 
         euc_dict = {}
         cos_dict = {}
+        ns = []
         for name, A in mats.items():
             print(f"matrix: {name}")
 
             euclidean_diffs = []
-            cosine_diffs = []
+            # cosine_diffs = []
             for d in d_reduced:
                 e_diff = []
-                c_diff = []
+                # c_diff = []
                 for i in range(num_iter):
                     # Reseed Johnson Lindenstrauss and rerun test
                     self.jl.reseed(i)
-                    euc, cos = self.test_jl(A, d, epsilon)
+                    euc = self.test_jl(A, d, epsilon)
                     e_diff.append(euc)
-                    c_diff.append(cos)
+                    # c_diff.append(cos)
                 diff = np.mean(e_diff)
                 euclidean_diffs.append(diff)
 
-                diff = np.mean(c_diff)
-                cosine_diffs.append(diff)
+                # diff = np.mean(c_diff)
+                # cosine_diffs.append(diff)
             euc_dict[name] = euclidean_diffs
-            cos_dict[name] = cosine_diffs
-        plot1(euc_dict, cos_dict, d_reduced, epsilon, num_iter, self.save_fig, self.show_fig)
+            # cos_dict[name] = cosine_diffs
+            ns.append(A.shape[0])
+        plot1(euc_dict, 
+              d_reduced, 
+              epsilon, 
+              num_iter, 
+              ns,
+              self.save_fig, 
+              self.show_fig)
 
     def test_symm_reduct(self, A, ds, epsilons):
         """
@@ -183,8 +200,11 @@ class Tester:
 if __name__ == "__main__":
     jl = JohnsonLindenstrauss()
     epsilon = 1/64
-    n = 8
-    ds = [2, 4, 8, 16, 32, 64, 128]
-    mats = ["494_bus"] 
+    n = 5
+    sg = SSGetter(row_bounds=(500, 700))
+    print("HERE")
+    mats = sg.get_next(5)
+    ds = [2, 4, 8, 16, 32]
+    mats = mats.keys()
     test = Tester(jl,mats=mats, save_fig=True, show_fig=True)
     test.compare_eigenvectors(ds, epsilon, n)
