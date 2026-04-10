@@ -146,17 +146,16 @@ class JohnsonLindenstrauss:
         RETURN: PA, where P(dxn) -> PA (dxn)
         """
         self.epsilon = epsilon
-        self.n = A.shape[0]
+        self.n, self.m = A.shape
         self.d = d
         self.check_params() # This call updates d
 
-        PA = np.zeros(shape=(self.d, self.n))
+        PA = np.zeros(shape=(self.d, self.m))
 
         for row_A, col_A, val_A in zip(A.row, A.col, A.data):
             # Column of P multiplied by the row of A
             P_column = self.get_col(row_A)
             for row_P, val_P in enumerate(P_column):
-                # 
                 PA[row_P][col_A] += val_P * val_A
 
         return PA
