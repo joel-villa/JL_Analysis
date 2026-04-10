@@ -1,7 +1,7 @@
 """ For generating plots """
 import matplotlib.pyplot as plt
 
-def plot1(euc_dict, ds, epsilon, num_iter, ns, save_fig=False, show_fig=True):
+def plot1(euc_dict, ds, epsilon, num_iter, dims, nnzs, save_fig=False, show_fig=True):
     """
     For plotting compare_eigenvectors() in Tester
     Plot the data from the given nested dictionary
@@ -10,7 +10,7 @@ def plot1(euc_dict, ds, epsilon, num_iter, ns, save_fig=False, show_fig=True):
     """
     i = 0
     for name, euc_diffs in euc_dict.items():
-        plt.plot(ds, euc_diffs, label=f"{name} ({ns[i]}x{ns[i]})")
+        plt.plot(ds, euc_diffs, label=f"{name} ({dims[i][0]}x{dims[i][1]}) nnz = {nnzs[i]}")
         
         i += 1
 
@@ -27,7 +27,7 @@ def plot1(euc_dict, ds, epsilon, num_iter, ns, save_fig=False, show_fig=True):
     plt.tight_layout()
 
     if save_fig:
-        plt.savefig("plots/plot.jpg")
+        plt.savefig("plots/plot1.jpg")
     if show_fig:
         plt.show()
             
