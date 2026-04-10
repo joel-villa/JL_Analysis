@@ -27,7 +27,7 @@ def plot1(euc_dict, ds, epsilon, num_iter, ns, save_fig=False, show_fig=True):
     plt.tight_layout()
 
     if save_fig:
-        plt.savefig("plots/" + name  + ".jpg")
+        plt.savefig("plots/plot.jpg")
     if show_fig:
         plt.show()
             

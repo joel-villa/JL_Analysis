@@ -201,7 +201,7 @@ if __name__ == "__main__":
     jl = JohnsonLindenstrauss()
     epsilon = 1/64
     n = 5
-    sg = SSGetter(row_bounds=(500, 700))
+    sg = SSGetter(row_bounds=(200, 500), col_bounds=(30, 100))
     print("HERE")
     mats = sg.get_next(5)
     ds = [2, 4, 8, 16, 32]
