@@ -120,7 +120,8 @@ class Tester:
 
         euc_dict = {}
         cos_dict = {}
-        ns = []
+        dims = []
+        nnzs = []
         for name, A in mats.items():
             print(f"matrix: {name}")
 
@@ -142,12 +143,14 @@ class Tester:
                 # cosine_diffs.append(diff)
             euc_dict[name] = euclidean_diffs
             # cos_dict[name] = cosine_diffs
-            ns.append(A.shape[0])
+            dims.append(A.shape)
+            nnzs.append(A.nnz)
         plot1(euc_dict, 
               d_reduced, 
               epsilon, 
               num_iter, 
-              ns,
+              dims,
+              nnzs,
               self.save_fig, 
               self.show_fig)
 
@@ -201,7 +204,18 @@ if __name__ == "__main__":
     jl = JohnsonLindenstrauss()
     epsilon = 1/64
     n = 5
-    ds = [2, 4, 8, 16, 32]
-    mats = ["464_bus", "685_bus"]
+    ds = [2, 4, 8, 16, 32, 64, 128, 256, 400, 480]
+
+    """ 
+    SQUARE
+    Some bad boys: ["dwt_592", "can_634", "1138_bus", "bcsstm24"]
+    Some good boys: ["494_bus", "685_bus"]
+
+    RECTANGULAR
+    ["ash219"]
+    """
+
+    # TODO: rectangular tests
+    mats = ["494_bus", "685_bus"]
     test = Tester(jl,mats=mats, save_fig=True, show_fig=True)
     test.compare_eigenvectors(ds, epsilon, n)
