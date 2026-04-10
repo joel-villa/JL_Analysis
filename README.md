@@ -11,16 +11,18 @@ We dimensionally reduce
 ## To run main:
 python -m src.main
 
+## A Note on Cosine Distances
+
+Cosine distances are from 0 to 2, where 0 is identical, 1 is orthogonal, and 
+2 is opposite
+
 ## TODO
 
 ### High Priority
-- Implement cosine distance (dot product)
-- Debug Tester (eigenvector non-normalized - maybe see if there is numpy built in functions for finding top right/left eigenvectors)
-- Check top right eigenvector preservation
-- Behavior on Sparse matrices
+- Behavior on various Sparse matrices
+- From rectangular to square? 
 
 ### Mid Priority
-- From rectangular to square? 
 - Make JL take in just epsilon, d is determined by the following: d = (C \ln n) / \epsilon^2
 - Make Tests for preservation of Dot Products, Distance Vectors, etc
 - Find apt C, from this: d = (C ln n) / epsilon^2
