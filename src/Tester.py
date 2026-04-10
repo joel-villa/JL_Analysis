@@ -27,52 +27,6 @@ class Tester:
         self.save_fig = save_fig
         self.show_fig = show_fig
 
-    def top_eig(self, A, seed=42):
-        """
-        Get the top eigenvector of the square matrix A, given a seed
-
-        A    - square matrix
-        seed - seed for generating initial guess
-
-        RETURN: top eigenvector
-        """
-
-        # Random number generator:
-        r_gen = np.random.default_rng(seed=seed)
-
-        n, _ = A.shape
-
-        # Choose the initial vector x, 1 by n
-        v0 = r_gen.normal(loc=0.0, scale=0.01, size=n) # Initial guess is close to zero 
-
-        _, e = eigs(A, k=1, v0=v0) #k = 1 -> only get top eigenvector
-
-        return e
-
-    def top_left_eigenvector(self, A):
-        """
-        A - a (dxn) matrix where d << n
-
-        RETURN: top left eigenvector of A
-
-        A * A^T is a (dxd) matrix, get its top eigenvector via power iteration
-        """
-        # the dxd matrix for computing top left eigenvector
-        M = A @ A.T
-
-        return self.top_eig(M)
-
-    def top_right_eigenvector(self, A, top_left):
-        """
-        A        - a (dxn) matrix where d << n
-        top_left - A (dx1) vector
-
-        RETURN: top right eigenvector
-
-        top_left^T * A gives top right eigenvector of A
-        """
-
-        return top_left.T @ A
     
     def euclidean_dist(self, x, y):
         """
@@ -229,8 +183,8 @@ class Tester:
 if __name__ == "__main__":
     jl = JohnsonLindenstrauss()
     epsilon = 1/64
-    n = 8
-    ds = [2, 4, 8, 16, 32, 64, 128]
+    n = 1
+    ds = [2, 4, 8]
     mats = ["494_bus"] 
     test = Tester(jl,mats=mats, save_fig=True, show_fig=True)
     test.compare_eigenvectors(ds, epsilon, n)
