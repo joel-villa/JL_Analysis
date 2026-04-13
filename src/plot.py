@@ -1,5 +1,6 @@
 """ For generating plots """
 import matplotlib.pyplot as plt
+import numpy as np
 
 def plot1(euc_dict, ds, epsilon, num_iter, dims, nnzs, save_fig=False, show_fig=True):
     """
@@ -31,3 +32,25 @@ def plot1(euc_dict, ds, epsilon, num_iter, dims, nnzs, save_fig=False, show_fig=
     if show_fig:
         plt.show()
             
+def plot2(eig_pres, names, dims, nnzs):
+    """
+    For making a bar plot of the preservation of reducing a rectangular matrix
+    """    
+    labels = []
+    for i, name in enumerate(names):
+        labels.append(f"{name} ({dims[i][0]}x{dims[i][1]}, nnz={nnzs[i]})")
+
+    x = np.arange(len(labels)) * 1.5  # <-- add spacing here
+
+    plt.figure(figsize=(10, 5))       # <-- more room
+    plt.bar(x, eig_pres, width=0.6)   # <-- slightly thinner bars
+
+    plt.xticks(x, labels, rotation=30, ha='right')  # <-- rotate labels
+
+    plt.title('Top Eigenvector Preservation')
+    plt.xlabel('Matrices')
+    plt.ylabel('Difference in Top Eigenvector')
+
+    plt.tight_layout()
+    plt.savefig("plots/plot_rect_to_square.jpg")
+    plt.show()
