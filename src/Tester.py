@@ -7,6 +7,7 @@ from Sparsification_Research.src.SSGetter import SSGetter
 from scipy.linalg import norm # 2-norm by default
 from scipy.sparse.linalg import eigs
 from scipy.spatial.distance import cosine
+from scipy.sparse.linalg import svds
 import numpy as np
 from .plot import *
 
@@ -77,9 +78,23 @@ class Tester:
 
         |v - v_reduced| / |v|
         """
-        _, orig_eig = eigs(A, k=1)
 
-        orig_eig = orig_eig.flatten() # make 1D
+        n, m = A.shape
+        if (n > m):
+            # non square matrix, get top eigenvector w/ SVD
+            orig_eig, _, _ = svds(A, k=1)
+            #TODO
+            
+        elif (n == m):
+            # square matrix, get top eigenvector w/ eigs()
+            _, orig_eig = eigs(A, k=1)
+        else: 
+            raise ValueError("A has more columns than rows, dimensionality\
+                             reduction in this context is not sensible\
+                             (Or could you use the other SVD? idk)")
+        
+        # make eigenvector 1-dimensional
+        orig_eig = orig_eig.flatten() 
 
         # Using SVD to get right eigenvectors 
         _, _, Vh = np.linalg.svd(A_reduced, full_matrices=False)
@@ -114,6 +129,10 @@ class Tester:
     def compare_eigenvectors(self, d_reduced, epsilon=0.5, num_iter = 10):
         """
         Test all the matrices w/ the various d_reduced values
+
+        d_reduced - the dimensions to reduce matrices down to
+        epsilon   - TODO
+        num_iter  - get the average over some number of iterations
         """
         ss_getter = SSGetter(in_csr=False)
         mats = ss_getter.get_by_name(self.mats) 
@@ -217,5 +236,5 @@ if __name__ == "__main__":
 
     # TODO: rectangular tests
     mats = ["494_bus", "685_bus"]
-    test = Tester(jl,mats=mats, save_fig=True, show_fig=True)
+    test = Tester(jl,mats=mats, save_fig=False, show_fig=True)
     test.compare_eigenvectors(ds, epsilon, n)
