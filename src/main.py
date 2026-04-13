@@ -1,5 +1,4 @@
 from .JohnsonLindenstrauss import JohnsonLindenstrauss
-from .Tester import Tester
 import numpy as np
 from scipy import linalg
 """
