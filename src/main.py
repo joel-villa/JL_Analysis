@@ -2,6 +2,7 @@ from .JohnsonLindenstrauss import JohnsonLindenstrauss
 from .Tester import Tester
 import numpy as np
 from scipy import linalg
+import sys
 """
 TODO: 
 (1) Code up some Johnson Lindenstrauss algorithm(s)?
@@ -36,12 +37,17 @@ def test_one(eps, d):
             print(abs(approx_norm - orig_norm)/orig_norm)
 
     return jonny
+
 def eig_top_right(A):
   eigenvalues,a_ev = linalg.eig(A)
   # Get index of largest eigenvalue (by magnitude)
   top_idx = np.argmax(np.abs(eigenvalues))
   # Top right eigenvector
   a_ev_tr = a_ev[:, top_idx]
+  #check for negative eigenvalue
+  if(eigenvalues[top_idx]<0):
+        print(f"found negative eigenvalue {eigenvalues}, negating associated vector")
+        a_ev_tr *=-1
   return a_ev_tr
 
 def test_two(eps, d):
@@ -76,7 +82,7 @@ def test_two(eps, d):
 
             #project eigenvalues
             lowdimdiff = (P @ orig_eigenvalues) - approx_eigenvalues
-            highdimdiff = orig_eigenvalues - (approx_eigenvalues @P)
+            highdimdiff = orig_eigenvalues - (P.transpose()@approx_eigenvalues)
             lowdimdiffnorm = np.linalg.norm(lowdimdiff, ord=2)
             highdimdiffnorm = np.linalg.norm(highdimdiff, ord=2)
             print(f'lowdim norm of eig error {lowdimdiffnorm}')
@@ -240,8 +246,9 @@ if __name__ == "__main__":
     n = 8
     ds = [492,493,494]
     mats = ["494_bus"] 
-    test = Tester(jl,mats=mats, save_fig=False, show_fig=True)
-    test.compare_eigenvectors(ds, epsilon, n)
+    if(len(sys.argv)==0):
+        test = Tester(jl,mats=mats, save_fig=False, show_fig=True)
+        test.compare_eigenvectors(ds, epsilon, n)
     
     d = 500
     test_four(epsilon, d)
