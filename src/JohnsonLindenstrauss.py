@@ -107,8 +107,8 @@ class JohnsonLindenstrauss:
         if d is None:
             # No d provided, autogenerate based on A's dimensions and epsilon
             self.d = d_lower_bound
-        elif d_lower_bound > d:
-            print(f"WARNING: d_lower_bound = {d_lower_bound} > {d} = d")
+        # elif d_lower_bound > d:
+        #     print(f"WARNING: d_lower_bound = {d_lower_bound} > {d} = d")
     
     def get_col_seed(self, col_num):
         """
@@ -146,20 +146,43 @@ class JohnsonLindenstrauss:
         RETURN: PA, where P(dxn) -> PA (dxn)
         """
         self.epsilon = epsilon
-        self.n = A.shape[0]
+        self.n, self.m = A.shape
         self.d = d
         self.check_params() # This call updates d
 
-        PA = np.zeros(shape=(self.d, self.n))
+        PA = np.zeros(shape=(self.d, self.m))
 
         for row_A, col_A, val_A in zip(A.row, A.col, A.data):
             # Column of P multiplied by the row of A
             P_column = self.get_col(row_A)
             for row_P, val_P in enumerate(P_column):
-                # 
                 PA[row_P][col_A] += val_P * val_A
 
         return PA
+    
+    def reduce_vect(self, x, epsilon, d=None):
+        """
+        Reduce the vector x from length n to length d
+
+        x - (nx1) vector
+        d - new dimension of x after reduction
+        epsilon - some degree of allowed error
+        """
+        self.epsilon = epsilon
+        self.n = x.shape
+        self.d = d
+        self.check_params() # This call updates d
+
+        # The d dimensional vector result
+        Px = np.zeros(shape=(self.d))
+
+        for i in range(self.n):
+            # Column of P multiplied by a row of x 
+            P_column = self.get_col(i)
+            for p in P_column:
+                Px[i] += p * x[i]
+
+        return Px
 
         
     def jl_matrix(self):
