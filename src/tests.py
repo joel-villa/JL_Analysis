@@ -3,3 +3,37 @@ A file for some tests, which return xs and ys (for easy plotting)
 """
 
 from .util import *
+# def test_eigenvectors():
+#     ss_getter = SSGetter(in_csr=False)
+#     mats= ss_getter.get_by_name(["1138_bus"])
+#     for name, A in mats.items():
+#         print(name)
+#         A_reduced = jl_gaussian(A, eps=0.5)
+#         print(diff_in_top_eigs(A, A_reduced))
+
+def test_jl_top_eig_pres(A, epsilons, seed):
+    """
+    Test how well johnson lindenstrauss maintains top eigenvector of 
+    sparse matrices for variable epsilon (using sklearn gaussian projection
+    library)
+
+    A        - sparse matrix in COO format
+    epsilons - eigenvalues 
+    
+    RETURN: xs - reduced dimension (or maybe epsilon-TBD)
+            ys - eigenvector preservation
+    """
+
+    ys = np.zeros(np.shape(epsilons))
+
+    for i, eps in enumerate(epsilons):
+        A_reduced = jl_gaussian(A, eps=0.5, seed=seed)
+        diff = diff_in_top_eigs(A, A_reduced)
+        print(diff)
+        ys[i] = diff
+
+    return epsilons, ys
+    
+    
+
+    

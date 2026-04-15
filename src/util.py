@@ -14,31 +14,31 @@ import numpy as np
 from sklearn import random_projection
 from Sparsification_Research.src.SSGetter import SSGetter
 
-def jl_gaussian(X, eps):
+def jl_gaussian(X, eps, seed):
     """
     Reduce dimensions of X, via scikit learn's gaussian method
     """
-    transformer = random_projection.GaussianRandomProjection(eps=eps)
+    transformer = random_projection.GaussianRandomProjection(eps=eps, random_state=seed)
     X_new = transformer.fit_transform(X)
     return X_new
 
-def jl_sparse(X, eps):
+def jl_sparse(X, eps, seed):
     """
     Reduce dimensions of X, via scikit learn's gaussian method
     """
-    transformer = random_projection.SparseRandomProjection(eps=eps)
+    transformer = random_projection.SparseRandomProjection(eps=eps, random_state=seed)
     X_new = transformer.fit_transform(X)
     return X_new
 
 def top_eigs(A):
+    """
+    A - a (potentially non-square) matrix
+
+    RETURN: top left and top right eigenvectors
+
+    get the top eigenvectors of A, via SVD
+    """
     top_left, _, top_right = svds(A, k=1)
-    # U, _, Vh = np.linalg.svd(A, full_matrices=False)
-
-    # # Top right eigenvector 
-    # top_right = Vh[0, :]
-
-    # # Top left eigenvector
-    # top_left = U[:, 0]
 
     return top_left.flatten(), top_right.flatten()
 
@@ -69,20 +69,22 @@ def get_same_dim_vects(x1, x2, y1, y2):
 
 
 def diff_in_top_eigs(A, B):
+    """
+    A - a matrix
+    B - some dimensionally reduced version of A
+
+    RETURN: norm of difference in top eigenvectors
+
+    Difference in the top eigenvectors of the matrices A and B
+    (comparing whichever have same dimension - see get_same_dim_vects for 
+    details)
+    """
     A_left, A_right = top_eigs(A) 
     B_left, B_right = top_eigs(B) 
 
     A_eig, B_eig = get_same_dim_vects(A_left, A_right, B_left, B_right)
 
     return min(norm(A_eig - B_eig), norm(A_eig + B_eig))
-
-def test_eigenvectors():
-    ss_getter = SSGetter(in_csr=False)
-    mats= ss_getter.get_by_name(["1138_bus"])
-    for name, A in mats.items():
-        print(name)
-        A_reduced = jl_gaussian(A, eps=0.5)
-        print(diff_in_top_eigs(A, A_reduced))
 
 def euclidean_dist(x, y):
     """
