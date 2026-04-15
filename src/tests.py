@@ -11,6 +11,62 @@ from scipy.sparse.linalg import svds
 import numpy as np
 from .plot import *
 
+import numpy as np
+from sklearn import random_projection
+from Sparsification_Research.src.SSGetter import SSGetter
+
+def jl_gaussian(X, eps):
+    """
+    Reduce dimensions of X, via scikit learn's gaussian method
+    """
+    transformer = random_projection.GaussianRandomProjection(eps=eps)
+    X_new = transformer.fit_transform(X)
+    return X_new
+
+def jl_sparse(X, eps):
+    """
+    Reduce dimensions of X, via scikit learn's gaussian method
+    """
+    transformer = random_projection.SparseRandomProjection(eps=eps)
+    X_new = transformer.fit_transform(X)
+    return X_new
+
+def top_eigs(A):
+    top_left, _, top_right = svds(A, k=1)
+    # U, _, Vh = np.linalg.svd(A, full_matrices=False)
+
+    # # Top right eigenvector 
+    # top_right = Vh[0, :]
+
+    # # Top left eigenvector
+    # top_left = U[:, 0]
+
+    return top_left.flatten(), top_right.flatten()
+
+def diff_in_top_eigs(A, B):
+    A_left, A_right = top_eigs(A) 
+    B_left, B_right = top_eigs(B) 
+
+    if (np.shape(A_left) == np.shape(A_right)):
+        # A  is square, top left is equal to top right, can arbitrarily pic one
+        A_eig = A_left
+
+    if (np.shape(B_left) == np.shape(A_eig)):
+        # Use B's top left eigenvector for comparison
+        B_eig = B_left
+    elif (np.shape(B_right) == np.shape(A_eig)):
+        B_eig = B_right
+
+    return min(norm(A_eig - B_eig), norm(A_eig + B_eig))
+
+def test_eigenvectors():
+    ss_getter = SSGetter(in_csr=False)
+    mats= ss_getter.get_by_name(["1138_bus"])
+    for name, A in mats.items():
+        print(name)
+        A_reduced = jl_gaussian(A, eps=0.5)
+        print(diff_in_top_eigs(A, A_reduced))
+
 def euclidean_dist(x, y):
     """
     x - top eigenvector of some matrix A
@@ -98,35 +154,39 @@ def rect_to_square_eig_preservation(A):
     return eig_diff(A, A_reduced)
 
 
-if __name__ == "__main__":
-    n = 16
+# if __name__ == "__main__":
+#     n = 16
 
-    """ 
-    SQUARE
-    Some bad boys: ["dwt_592", "can_634", "1138_bus", "bcsstm24"]
-    Some good boys: ["494_bus", "685_bus"]
+#     """ 
+#     SQUARE
+#     Some bad boys: ["dwt_592", "can_634", "1138_bus", "bcsstm24"]
+#     Some good boys: ["494_bus", "685_bus"]
 
-    RECTANGULAR
-    ["ash219"]
-    """
-    mats = ["ash219", "abb313", "ch5-5-b2", "n2c6-b2", "cat_ears_3_1"]
+#     RECTANGULAR
+#     ["ash219"]
+#     """
+#     mats = ["ash219", "abb313", "ch5-5-b2", "n2c6-b2", "cat_ears_3_1"]
 
-    ss_getter = SSGetter(in_csr=False)
-    mats = ss_getter.get_by_name(mats) 
+#     ss_getter = SSGetter(in_csr=False)
+#     mats = ss_getter.get_by_name(mats) 
 
 
-    eig_pres = []
-    names    = []
-    dims     = []
-    nnzs     = []
-    for name, A in mats.items():
-        eig_diffs = []
-        for _ in range(n):
-            eig_diffs.append(rect_to_square_eig_preservation(A))
+#     eig_pres = []
+#     names    = []
+#     dims     = []
+#     nnzs     = []
+#     for name, A in mats.items():
+#         eig_diffs = []
+#         for _ in range(n):
+#             eig_diffs.append(rect_to_square_eig_preservation(A))
 
-        eig_pres.append(np.mean(eig_diffs))
-        names.append(name)
-        dims.append(A.shape)
-        nnzs.append(A.nnz)
+#         eig_pres.append(np.mean(eig_diffs))
+#         names.append(name)
+#         dims.append(A.shape)
+#         nnzs.append(A.nnz)
     
-    plot2(eig_pres, names, dims, nnzs)
+#     plot2(eig_pres, names, dims, nnzs)
+
+
+if __name__ == "__main__":
+    test_eigenvectors()
