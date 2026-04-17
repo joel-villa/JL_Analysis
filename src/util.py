@@ -28,23 +28,26 @@ def percent_reduce(A, p, seed):
 
     return A_reduced
     
-def jl_gaussian(X, eps, seed):
+def jl_gaussian(X, d, seed, eps=0.9):
     """
     Reduce dimensions of X, via scikit learn's gaussian method
 
     NOTE: this will only return a set size reduction, not great for testing purposes
     """
-    transformer = random_projection.GaussianRandomProjection(eps=eps, random_state=seed)
+
+    d=min(X.shape[1], d)
+
+    transformer = random_projection.GaussianRandomProjection(n_components=d, eps=eps, random_state=seed)
     X_new = transformer.fit_transform(X)
     return X_new
 
-def jl_sparse(X, eps, seed):
+def jl_sparse(X, d, seed, eps=0.9):
     """
     Reduce dimensions of X, via scikit learn's gaussian method
 
     NOTE: this will only return a set size reduction, not great for testing purposes
     """
-    transformer = random_projection.SparseRandomProjection(eps=eps, random_state=seed)
+    transformer = random_projection.SparseRandomProjection(n_components=d, eps=eps, random_state=seed)
     X_new = transformer.fit_transform(X)
     return X_new
 
