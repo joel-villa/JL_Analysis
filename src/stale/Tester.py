@@ -1,7 +1,7 @@
 """
 Tests the behavior of a JL Reduction
 """
-from .JohnsonLindenstrauss import JohnsonLindenstrauss
+from ..util.JohnsonLindenstrauss import JohnsonLindenstrauss
 
 from Sparsification_Research.src.SSGetter import SSGetter
 from scipy.linalg import norm # 2-norm by default

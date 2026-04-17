@@ -1,0 +1,49 @@
+"""
+For interfacing with scikit learn's JL reduction
+"""
+
+from sklearn import random_projection
+
+
+def check_valid_dimensions(A):
+    if (A.shape[0] > A.shape[1]):
+        raise ValueError(f"Scikit JL requires rows < cols, but A has shape: {A.shape}")
+    
+    if (min(A.shape) <= 1):
+            raise ValueError(f"Matrix too small: {A.shape}")
+    
+def jl_gaussian(X, d, seed, eps=0.9):
+    """
+    X - original matrix
+    d - desired dimension
+    seed - for repeatable randomness
+    eps - allowable error
+
+    RETURN: reduced X
+
+    Reduce dimensions of X, via scikit learn's gaussian method
+    """
+    
+    check_valid_dimensions(X)
+
+    transformer = random_projection.GaussianRandomProjection(n_components=d, eps=eps, random_state=seed)
+    X_new = transformer.fit_transform(X)
+    return X_new
+
+def jl_sparse(X, d, seed, eps=0.9):
+    """
+    X - original matrix
+    d - desired dimension
+    seed - for repeatable randomness
+    eps - allowable error
+
+    RETURN: reduced X
+
+    Reduce dimensions of X, via scikit learn's gaussian method
+    """
+
+    check_valid_dimensions(X)
+
+    transformer = random_projection.SparseRandomProjection(n_components=d, eps=eps, random_state=seed)
+    X_new = transformer.fit_transform(X)
+    return X_new

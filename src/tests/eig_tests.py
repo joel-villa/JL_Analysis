@@ -2,7 +2,8 @@
 A file for some tests, which return xs and ys (for easy plotting)
 """
 from math import ceil 
-from .util import *
+from ..util.eig_functs import *
+from ..util.scikit_jl import *
 
 
 def jl_top_eig_pres(A, ps, seed):

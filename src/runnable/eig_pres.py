@@ -4,9 +4,7 @@ Joel's main
 
 from Sparsification_Research.src.SSGetter import SSGetter
 from Sparsification_Research.src.Plotter import Plotter
-from .tests import *
-
-import matplotlib.pyplot as plt
+from ..tests.eig_tests import *
 
 import numpy as np
 
