@@ -1,7 +1,6 @@
 """
-Some helper functions for the tests
+Some helper functions for the testing eigenvector preservation
 """
-from .JohnsonLindenstrauss import JohnsonLindenstrauss
 
 from Sparsification_Research.src.SSGetter import SSGetter
 from scipy.linalg import norm # 2-norm by default
@@ -12,19 +11,6 @@ import numpy as np
 import numpy as np
 from Sparsification_Research.src.SSGetter import SSGetter
 
-def percent_reduce(A, p, seed):
-    """
-    A - a sparse matrix
-    p - some proportion of reduction
-    Reduce the matrix A by some percent using JL implementation
-    """
-    n = A.shape[0]
-    reduce_ammount = int(n * p)
-    print(reduce_ammount)
-    jl = JohnsonLindenstrauss(seed=seed)
-    A_reduced = jl.reduce(A, epsilon=0.9, d=1 - reduce_ammount)
-
-    return A_reduced
 
 def top_eigs(A):
     """
@@ -84,6 +70,12 @@ def diff_in_top_eigs(A, B):
     A_eig, B_eig = get_same_dim_vects(A_left, A_right, B_left, B_right)
 
     return min(norm(A_eig - B_eig), norm(A_eig + B_eig))
+
+
+"""
+Below are some older functions which were implemented with the JL
+implementation in mind 
+"""
 
 def euclidean_dist(x, y):
     """
@@ -158,6 +150,22 @@ def eig_diff(A, A_reduced):
     euclidean_distance = euclidean_dist(orig_eig, top_right)
     return euclidean_distance
 
+def percent_reduce(A, p, seed):
+    """
+    A - a sparse matrix
+    p - some proportion of reduction
+    Reduce the matrix A by some percent using JL implementation
+    """
+    from .JohnsonLindenstrauss import JohnsonLindenstrauss
+
+    n = A.shape[0]
+    reduce_ammount = int(n * p)
+    print(reduce_ammount)
+    jl = JohnsonLindenstrauss(seed=seed)
+    A_reduced = jl.reduce(A, epsilon=0.9, d=1 - reduce_ammount)
+
+    return A_reduced
+
 def rect_to_square_eig_preservation(A):
     """
     A - COO sparse matrix s.t. A is mxn matrix where m << n
@@ -167,6 +175,8 @@ def rect_to_square_eig_preservation(A):
     Given a sparse rectangular matrix A, get the top eigenvector of a ~A, 
     where ~A is PA, where P is a JL projection matrix
     """
+    from .JohnsonLindenstrauss import JohnsonLindenstrauss
+    
     jl = JohnsonLindenstrauss(seed=1)
     A_reduced = jl.reduce(A, epsilon=0.9, d=A.shape[1])
     return eig_diff(A, A_reduced)
