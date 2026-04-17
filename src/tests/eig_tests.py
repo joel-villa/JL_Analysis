@@ -2,7 +2,8 @@
 A file for some tests, which return xs and ys (for easy plotting)
 """
 from math import ceil 
-from .util import *
+from ..util.eig_functs import *
+from ..util.scikit_jl import *
 
 
 def jl_top_eig_pres(A, ps, seed):
@@ -45,7 +46,7 @@ def scikit_eig_percent_reduce(A, ps, seed):
 
     for i, p in enumerate(ps):
         n = A.shape[1]
-        reduce_ammount = ceil(n * p)
+        reduce_ammount = ceil(n * p * 0.01)
         d = n - reduce_ammount
         if (d <= 1):
             print(f"WARNING: reduced dimension {d} is too small, defaulting to 2")

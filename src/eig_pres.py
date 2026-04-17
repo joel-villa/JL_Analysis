@@ -1,12 +1,10 @@
 """
-Joel's main
+for testing eigenvector preservation
 """
 
 from Sparsification_Research.src.SSGetter import SSGetter
 from Sparsification_Research.src.Plotter import Plotter
-from .tests import *
-
-import matplotlib.pyplot as plt
+from .tests.eig_tests import *
 
 import numpy as np
 
@@ -37,7 +35,7 @@ def test(funct, plotter, mats, seed, num_avg, input):
 
         ys = ys / num_avg
 
-        plotter.add_to_plot(xs, ys, label=f"{name} (nnz = {A.nnz})")
+        plotter.add_to_plot(xs, ys, label=f"{name} ({A.shape[0]}x{A.shape[1]}) nnz = {A.nnz}")
     print("Finished test")
     plotter.finish()
 
@@ -133,7 +131,7 @@ def run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg):
                       save_name="scikit_eig_percent_reduce")
     function = scikit_eig_percent_reduce
 
-    ps = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
+    ps = [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]
 
     test(funct=function, 
          plotter=plotter,
