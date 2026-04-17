@@ -22,6 +22,7 @@ Cosine distances are from 0 to 2, where 0 is identical, 1 is orthogonal, and
 - Power iteration w/ JL reductions, Sparsified, and...
     - Use subset matrices itteratively (akin to boosting) - random sampling
 - Behavior on various Sparse matrices
+- Try scikit learn library out
 
 ### Mid Priority
 
