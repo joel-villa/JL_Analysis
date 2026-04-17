@@ -21,10 +21,10 @@ def percent_reduce(A, p, seed):
     Reduce the matrix A by some percent using JL implementation
     """
     n = A.shape[0]
-    d = int(n * p)
-    print(f"d = {d}")
+    reduce_ammount = int(n * p)
+    print(reduce_ammount)
     jl = JohnsonLindenstrauss(seed=seed)
-    A_reduced = jl.reduce(A, epsilon=0.9, d=d)
+    A_reduced = jl.reduce(A, epsilon=0.9, d=1 - reduce_ammount)
 
     return A_reduced
     
@@ -59,6 +59,9 @@ def top_eigs(A):
 
     get the top eigenvectors of A, via SVD
     """
+    if (min(A.shape) <= 1):
+        raise ValueError(f"A reduced to dimension {A.shape}, too small for svd") 
+
     top_left, _, top_right = svds(A, k=1)
 
     return top_left.flatten(), top_right.flatten()
@@ -192,41 +195,3 @@ def rect_to_square_eig_preservation(A):
     jl = JohnsonLindenstrauss(seed=1)
     A_reduced = jl.reduce(A, epsilon=0.9, d=A.shape[1])
     return eig_diff(A, A_reduced)
-
-
-# if __name__ == "__main__":
-#     n = 16
-
-#     """ 
-#     SQUARE
-#     Some bad boys: ["dwt_592", "can_634", "1138_bus", "bcsstm24"]
-#     Some good boys: ["494_bus", "685_bus"]
-
-#     RECTANGULAR
-#     ["ash219"]
-#     """
-#     mats = ["ash219", "abb313", "ch5-5-b2", "n2c6-b2", "cat_ears_3_1"]
-
-#     ss_getter = SSGetter(in_csr=False)
-#     mats = ss_getter.get_by_name(mats) 
-
-
-#     eig_pres = []
-#     names    = []
-#     dims     = []
-#     nnzs     = []
-#     for name, A in mats.items():
-#         eig_diffs = []
-#         for _ in range(n):
-#             eig_diffs.append(rect_to_square_eig_preservation(A))
-
-#         eig_pres.append(np.mean(eig_diffs))
-#         names.append(name)
-#         dims.append(A.shape)
-#         nnzs.append(A.nnz)
-    
-#     plot2(eig_pres, names, dims, nnzs)
-
-
-if __name__ == "__main__":
-    test_eigenvectors()

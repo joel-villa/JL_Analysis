@@ -3,13 +3,7 @@ A file for some tests, which return xs and ys (for easy plotting)
 """
 from math import ceil 
 from .util import *
-# def test_eigenvectors():
-#     ss_getter = SSGetter(in_csr=False)
-#     mats= ss_getter.get_by_name(["1138_bus"])
-#     for name, A in mats.items():
-#         print(name)
-#         A_reduced = jl_gaussian(A, eps=0.5)
-#         print(diff_in_top_eigs(A, A_reduced))
+
 
 def jl_top_eig_pres(A, ps, seed):
     """
@@ -49,19 +43,29 @@ def scikit_eig_percent_reduce(A, ps, seed):
     ys = np.zeros(np.shape(ps))
     xs = np.zeros(np.shape(ps))
 
+    if (A.shape[0] > A.shape[1]):
+        raise ValueError(f"Scikit JL requires rows < cols, but A has shape: {A.shape}")
+    
+    if (min(A.shape) <= 1):
+            raise ValueError(f"Matrix too small: {A.shape}")
+
     for i, p in enumerate(ps):
-        n = A.shape[0]
-        d = ceil(n * p)
-        if (d == 1):
-            print(f"WARNING: reduced dimension {d} is too small")
-            d = d + 1
-        # print(f"{d}")
+        n = A.shape[1]
+        reduce_ammount = ceil(n * p)
+        d = n - reduce_ammount
+        if (d <= 1):
+            print(f"WARNING: reduced dimension {d} is too small, defaulting to 2")
+            d = 2
+        
         A_reduced = jl_gaussian(A, d=d, eps=0.9, seed=seed)
+
+        print(A_reduced.shape)
+
         diff = diff_in_top_eigs(A, A_reduced)
         ys[i] = diff
         xs[i] = A_reduced.shape[1]
     
-    return xs, ys
+    return ps, ys
 
 def scikit_jl_top_eig_pres(A, epsilons, seed):
     """

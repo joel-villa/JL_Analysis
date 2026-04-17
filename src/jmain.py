@@ -130,11 +130,10 @@ def run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg):
     plotter.init_plot(title="top eigenvector preservation of normalized JL",
                       x_label="percent dimensionality reduction",
                       y_label="norm of difference in top eigenvectors",
-                      save_name="scikit_eig_percent_reduce",
-                      desceneding_x=True)
+                      save_name="scikit_eig_percent_reduce")
     function = scikit_eig_percent_reduce
 
-    ps = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.01]
+    ps = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
 
     test(funct=function, 
          plotter=plotter,
@@ -146,8 +145,8 @@ def run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg):
 
 if __name__ == '__main__':
     plotter = Plotter(save_fig=True, show_fig=True)
-    mats    = ["494_bus", "1138_bus", "bibd_11_5"] #TODO: fix shtuff
-    # mats    = ["494_bus", "1138_bus", "ch7-7-b1"]
+    # mats    = ["494_bus"]
+    mats    = ["494_bus", "1138_bus", "bibd_11_5", "bibd_13_6", "bcsstk08"]
     seed    = 10
     num_avg = 1
 
