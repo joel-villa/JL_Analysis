@@ -14,9 +14,25 @@ import numpy as np
 from sklearn import random_projection
 from Sparsification_Research.src.SSGetter import SSGetter
 
+def percent_reduce(A, p, seed):
+    """
+    A - a sparse matrix
+    p - some proportion of reduction
+    Reduce the matrix A by some percent using JL implementation
+    """
+    n = A.shape[0]
+    d = int(n * p)
+    print(f"d = {d}")
+    jl = JohnsonLindenstrauss(seed=seed)
+    A_reduced = jl.reduce(A, epsilon=0.9, d=d)
+
+    return A_reduced
+    
 def jl_gaussian(X, eps, seed):
     """
     Reduce dimensions of X, via scikit learn's gaussian method
+
+    NOTE: this will only return a set size reduction, not great for testing purposes
     """
     transformer = random_projection.GaussianRandomProjection(eps=eps, random_state=seed)
     X_new = transformer.fit_transform(X)
@@ -25,6 +41,8 @@ def jl_gaussian(X, eps, seed):
 def jl_sparse(X, eps, seed):
     """
     Reduce dimensions of X, via scikit learn's gaussian method
+
+    NOTE: this will only return a set size reduction, not great for testing purposes
     """
     transformer = random_projection.SparseRandomProjection(eps=eps, random_state=seed)
     X_new = transformer.fit_transform(X)

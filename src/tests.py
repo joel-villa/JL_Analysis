@@ -11,6 +11,29 @@ from .util import *
 #         A_reduced = jl_gaussian(A, eps=0.5)
 #         print(diff_in_top_eigs(A, A_reduced))
 
+def jl_top_eig_pres(A, ps, seed):
+    """
+    Test how well johnson lindenstrauss maintains top eigenvector of 
+    sparse matrices for variable epsilon (using personal implementation)
+
+    A  - sparse matrix in COO format
+    ps - percent sparsified
+    
+    RETURN: ps - input
+            ys - eigenvector preservation
+    """
+
+    ys = np.zeros(np.shape(ps))
+    xs = np.zeros(np.shape(ps))
+
+    for i, p in enumerate(ps):
+        A_reduced = percent_reduce(A, p, seed=seed)
+        diff = diff_in_top_eigs(A, A_reduced)
+        ys[i] = diff
+        xs[i] = A_reduced.shape[1]
+
+    return ps, ys
+
 def test_jl_top_eig_pres(A, epsilons, seed):
     """
     Test how well johnson lindenstrauss maintains top eigenvector of 
@@ -25,12 +48,15 @@ def test_jl_top_eig_pres(A, epsilons, seed):
     """
 
     ys = np.zeros(np.shape(epsilons))
+    xs = np.zeros(np.shape(epsilons))
 
     for i, eps in enumerate(epsilons):
         A_reduced = jl_gaussian(A, eps=0.5, seed=seed)
         diff = diff_in_top_eigs(A, A_reduced)
         print(diff)
         ys[i] = diff
+        xs[i] = A_reduced.shape[1]
+        print(np.shape(A_reduced))
 
     return epsilons, ys
     
