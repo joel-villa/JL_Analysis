@@ -9,7 +9,7 @@ TODO:
 """
 
 from Sparsification_Research.src.SSGetter import SSGetter
-from Sparsification_Research.src.MatrixChecker import MatrixChecker
+from Sparsification_Research.src.old_code.MatrixChecker import MatrixChecker
 
 
 def test_one(eps, d):

@@ -43,12 +43,6 @@ def scikit_eig_percent_reduce(A, ps, seed):
     ys = np.zeros(np.shape(ps))
     xs = np.zeros(np.shape(ps))
 
-    if (A.shape[0] > A.shape[1]):
-        raise ValueError(f"Scikit JL requires rows < cols, but A has shape: {A.shape}")
-    
-    if (min(A.shape) <= 1):
-            raise ValueError(f"Matrix too small: {A.shape}")
-
     for i, p in enumerate(ps):
         n = A.shape[1]
         reduce_ammount = ceil(n * p)
@@ -58,8 +52,6 @@ def scikit_eig_percent_reduce(A, ps, seed):
             d = 2
         
         A_reduced = jl_gaussian(A, d=d, eps=0.9, seed=seed)
-
-        print(A_reduced.shape)
 
         diff = diff_in_top_eigs(A, A_reduced)
         ys[i] = diff
