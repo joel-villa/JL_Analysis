@@ -46,7 +46,7 @@ def scikit_eig_percent_reduce(A, ps, seed):
 
     for i, p in enumerate(ps):
         n = A.shape[1]
-        reduce_ammount = ceil(n * p)
+        reduce_ammount = ceil(n * p * 0.01)
         d = n - reduce_ammount
         if (d <= 1):
             print(f"WARNING: reduced dimension {d} is too small, defaulting to 2")
