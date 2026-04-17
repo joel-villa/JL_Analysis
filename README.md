@@ -23,6 +23,8 @@ Cosine distances are from 0 to 2, where 0 is identical, 1 is orthogonal, and
     - Use subset matrices itteratively (akin to boosting) - random sampling
 - Behavior on various Sparse matrices
 - Try scikit learn library out
+- Compare eig preservation of scikit's gaussian vs. sparse
+- SVD or Power? that is the question
 
 ### Mid Priority
 

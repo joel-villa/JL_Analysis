@@ -11,6 +11,22 @@ import numpy as np
 import numpy as np
 from Sparsification_Research.src.SSGetter import SSGetter
 
+def top_left(A):
+    """
+    A - a (potentially non-square) matrix
+
+    RETURN: top left and top right eigenvectors
+
+    get the top eigenvectors of A, via SVD
+    NOTE: TOP left is the significant one when using scikit learn's API
+    """
+    if (min(A.shape) <= 1):
+        raise ValueError(f"A reduced to dimension {A.shape}, too small for svd") 
+
+    top_left, _, _ = svds(A, k=1)
+
+
+    return top_left.flatten()
 
 def top_eigs(A):
     """
@@ -19,11 +35,16 @@ def top_eigs(A):
     RETURN: top left and top right eigenvectors
 
     get the top eigenvectors of A, via SVD
+    NOTE: TOP left is the significant one when using scikit learn's API
     """
     if (min(A.shape) <= 1):
         raise ValueError(f"A reduced to dimension {A.shape}, too small for svd") 
 
     top_left, _, top_right = svds(A, k=1)
+
+    # print(f"A: {A.shape}")
+    # print(f"top_left: {top_left.shape}")
+    # print(f"top_right: {top_right.shape}")
 
     return top_left.flatten(), top_right.flatten()
 
