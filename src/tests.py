@@ -1,7 +1,7 @@
 """
 A file for some tests, which return xs and ys (for easy plotting)
 """
-
+from math import ceil 
 from .util import *
 # def test_eigenvectors():
 #     ss_getter = SSGetter(in_csr=False)
@@ -34,7 +34,36 @@ def jl_top_eig_pres(A, ps, seed):
 
     return ps, ys
 
-def test_jl_top_eig_pres(A, epsilons, seed):
+def scikit_eig_percent_reduce(A, ps, seed):
+    """
+    Test how well johnson lindenstrauss maintains top eigenvector of 
+    sparse matrices for variable epsilon (using sklearn gaussian projection
+    library)
+
+    A  - sparse matrix in COO format
+    ps - percent reduction ammounts 
+    
+    RETURN: xs - reduced dimension (or maybe epsilon-TBD)
+            ys - eigenvector preservation
+    """
+    ys = np.zeros(np.shape(ps))
+    xs = np.zeros(np.shape(ps))
+
+    for i, p in enumerate(ps):
+        n = A.shape[0]
+        d = ceil(n * p)
+        if (d == 1):
+            print(f"WARNING: reduced dimension {d} is too small")
+            d = d + 1
+        # print(f"{d}")
+        A_reduced = jl_gaussian(A, d=d, eps=0.9, seed=seed)
+        diff = diff_in_top_eigs(A, A_reduced)
+        ys[i] = diff
+        xs[i] = A_reduced.shape[1]
+    
+    return xs, ys
+
+def scikit_jl_top_eig_pres(A, epsilons, seed):
     """
     Test how well johnson lindenstrauss maintains top eigenvector of 
     sparse matrices for variable epsilon (using sklearn gaussian projection
@@ -51,14 +80,12 @@ def test_jl_top_eig_pres(A, epsilons, seed):
     xs = np.zeros(np.shape(epsilons))
 
     for i, eps in enumerate(epsilons):
-        A_reduced = jl_gaussian(A, eps=0.5, seed=seed)
+        A_reduced = jl_gaussian(A, d="auto", eps=eps, seed=seed)
         diff = diff_in_top_eigs(A, A_reduced)
-        print(diff)
         ys[i] = diff
         xs[i] = A_reduced.shape[1]
-        print(np.shape(A_reduced))
-
-    return epsilons, ys
+    
+    return xs, ys
     
     
 
