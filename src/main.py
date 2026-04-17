@@ -1,4 +1,4 @@
-from ..util.JohnsonLindenstrauss import JohnsonLindenstrauss
+from .util.JohnsonLindenstrauss import JohnsonLindenstrauss
 import numpy as np
 from scipy import linalg
 import sys
