@@ -9,7 +9,7 @@ import numpy as np
 from .tests.svd_tests import *
 from .util.eig_functs import *
 
-def test(funct, plotter, mat_name, seed, num_avg, num_iter):
+def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     """
     Test the given function from tests.py 
     
@@ -31,10 +31,8 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter):
     
     for i in range(num_avg):
         seed_i = seed + i 
-        rng = np.random.default_rng(seed=seed_i)
-        v0 = rng.normal(0,1,np.shape(A)[1])
 
-        xs, ys_i, label = funct(A, v0, u_star, num_iter)
+        xs, ys_i, label = funct(A, u_star, num_iter, seed=seed_i, **args)
         ys += ys_i
     
     ys = ys / num_avg
@@ -48,12 +46,16 @@ if __name__ == "__main__":
     # mats    = ["494_bus"]
     seed    = 10
     num_avg = 1
-    num_iter = 64
+    num_iter = 32
 
     plotter.init_plot("SVD Convergence", "number of iterations", "residual", "svd_convergence") 
     
     test(baseline_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter)
-    test(baseline_svd_convergence, plotter, "1138_bus", seed, num_avg, num_iter)
-    test(baseline_svd_convergence, plotter, "662_bus", seed, num_avg, num_iter)
+    # test(baseline_svd_convergence, plotter, "1138_bus", seed, num_avg, num_iter)
+    # test(baseline_svd_convergence, plotter, "662_bus", seed, num_avg, num_iter)
+    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 400})
+    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 300})
+    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 200})
+    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 100})
 
     plotter.finish()

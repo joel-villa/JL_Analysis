@@ -10,12 +10,15 @@ from scipy.linalg import norm # 2-norm by default
 import numpy as np
 
 from ..util.eig_functs import euclidean_dist
+from ..util.scikit_jl import jl_gaussian
 from ..util.svd_util import topsing
 
-def baseline_svd_convergence(A, v0, u_star, num_iter):
+def baseline_svd_convergence(A, u_star, num_iter, seed):
     """
     The baseline SVD convergence
     """
+    rng = np.random.default_rng(seed=seed)
+    v0 = rng.normal(0,1,np.shape(A)[1])
     v = v0.copy()
 
     xs = np.zeros(num_iter)
@@ -38,34 +41,66 @@ def baseline_svd_convergence(A, v0, u_star, num_iter):
     
     return xs, ys, f"standard svd"
 
-def svds_convergence(A, v0, v_star, num_iter, seed):
+def jl_reduced_svd_convergence(A, u_star, num_iter, seed, d):
     """
-    The baseline SVD convergence
-    NOTE: svds() from scipy.sparse.linalg is not an itterative method
+    Convergence of SVD on a JL-dimensionally reduced version of A
     """
-    v = v0.copy()
 
     xs = np.zeros(num_iter)
     ys = np.zeros(num_iter)
 
-    for i in range(num_iter):
-        # NOTE: using scikit-learn -> top left eig is of significance
-        v, _, _ = svds(A, 
-                       k=1,        # top eigenvector
-                       which='LM', # top eigenvector
-                       v0=v, #TODO
-                       maxiter=1, 
-                       random_state=seed) #TODO should this be more random (ie: add i to seed)
-        
-        v = v.flatten() # make v 1D rather than 2D: (x,) rather than (x,1)
+    reduced_A = jl_gaussian(A, d=d, seed=seed, eps=0.99)
 
-        euc_dist = euclidean_dist(v, v_star)
+    rng = np.random.default_rng(seed=seed)
+    v0 = rng.normal(0,1,np.shape(reduced_A)[1])
+    v = v0.copy()
+
+    for i in range(num_iter):
+        # NOTE: using scikit-learn -> top left eig (u) is of significance
+
+        u, _, v = topsing(v0=v,
+                          A=reduced_A, 
+                          maxiter=1)
+        
+        # v = v.flatten() # make v 1D rather than 2D: (x,) rather than (x,1)
+
+        euc_dist = euclidean_dist(u, u_star)
         ys[i] = euc_dist
         xs[i] = i
 
     # print(f"xs: {xs}")
     # print(f"ys: {ys}")
     
-    return xs, ys, f"standard svd"
+    return xs, ys, f"jl-reduced svd {reduced_A.shape}"
+
+# def svds_convergence(A, v0, v_star, num_iter, seed):
+#     """
+#     The baseline SVD convergence
+#     NOTE: svds() from scipy.sparse.linalg is not an itterative method
+#     """
+#     v = v0.copy()
+
+#     xs = np.zeros(num_iter)
+#     ys = np.zeros(num_iter)
+
+#     for i in range(num_iter):
+#         # NOTE: using scikit-learn -> top left eig is of significance
+#         v, _, _ = svds(A, 
+#                        k=1,        # top eigenvector
+#                        which='LM', # top eigenvector
+#                        v0=v, #TODO
+#                        maxiter=1, 
+#                        random_state=seed) #TODO should this be more random (ie: add i to seed)
+        
+#         v = v.flatten() # make v 1D rather than 2D: (x,) rather than (x,1)
+
+#         euc_dist = euclidean_dist(v, v_star)
+#         ys[i] = euc_dist
+#         xs[i] = i
+
+#     # print(f"xs: {xs}")
+#     # print(f"ys: {ys}")
+    
+#     return xs, ys, f"standard svd"
     
     
