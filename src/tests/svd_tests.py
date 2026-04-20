@@ -12,9 +12,36 @@ import numpy as np
 from ..util.eig_functs import euclidean_dist
 from ..util.svd_util import topsing
 
-def baseline_svd_convergence(A, v0, v_star, num_iter, seed):
+def baseline_svd_convergence(A, v0, u_star, num_iter):
     """
     The baseline SVD convergence
+    """
+    v = v0.copy()
+
+    xs = np.zeros(num_iter)
+    ys = np.zeros(num_iter)
+
+    for i in range(num_iter):
+        # NOTE: using scikit-learn -> top left eig (u) is of significance
+        u, _, v = topsing(v0=v,
+                          A=A, 
+                          maxiter=1)
+        
+        # v = v.flatten() # make v 1D rather than 2D: (x,) rather than (x,1)
+
+        euc_dist = euclidean_dist(u, u_star)
+        ys[i] = euc_dist
+        xs[i] = i
+
+    # print(f"xs: {xs}")
+    # print(f"ys: {ys}")
+    
+    return xs, ys, f"standard svd"
+
+def svds_convergence(A, v0, v_star, num_iter, seed):
+    """
+    The baseline SVD convergence
+    NOTE: svds() from scipy.sparse.linalg is not an itterative method
     """
     v = v0.copy()
 
