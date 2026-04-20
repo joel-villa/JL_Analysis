@@ -27,13 +27,14 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter):
     print(mat_name)
     ys = np.zeros(num_iter)
 
-    v0 = np.random.uniform(0, 0.01, size=A.shape[0])
-    print(f"v0.shape: {v0.shape}")
-    v_star =  top_left(A)
+    u_star =  top_left(A)
     
     for i in range(num_avg):
         seed_i = seed + i 
-        xs, ys_i, label = funct(A, v0, v_star, num_iter, seed=seed_i)
+        rng = np.random.default_rng(seed=seed_i)
+        v0 = rng.normal(0,1,np.shape(A)[1])
+
+        xs, ys_i, label = funct(A, v0, u_star, num_iter)
         ys += ys_i
     
     ys = ys / num_avg
