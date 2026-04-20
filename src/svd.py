@@ -32,7 +32,15 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     for i in range(num_avg):
         seed_i = seed + i 
 
-        xs, ys_i, label = funct(A, u_star, num_iter, seed=seed_i, **args)
+        rng = np.random.default_rng(seed=seed_i)
+        u0 = rng.normal(0,1,np.shape(A)[0])
+        u0 = u0 / norm(u0)
+
+        print(u0.shape)
+        print(u0)
+        print(A.shape)
+
+        xs, ys_i, label = funct(A, u0, u_star, num_iter, seed=seed_i, **args)
         ys += ys_i
     
     ys = ys / num_avg
@@ -48,18 +56,19 @@ if __name__ == "__main__":
     num_avg = 1
     num_iter = 32
 
-    plotter.init_plot("SVD Convergence", "number of iterations", "residual", "bibd_13_6") 
+    plotter.init_plot("SVD Convergence", "number of iterations", "residual", "494_bus") 
     
-    # test(baseline_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter)
-    # # test(baseline_svd_convergence, plotter, "1138_bus", seed, num_avg, num_iter)
-    # # test(baseline_svd_convergence, plotter, "662_bus", seed, num_avg, num_iter)
-    # test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 400})
-    # test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 300})
-    # test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 200})
-    # test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 100})
+    test(baseline_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter)
+    # test(baseline_svd_convergence, plotter, "1138_bus", seed, num_avg, num_iter)
+    # test(baseline_svd_convergence, plotter, "662_bus", seed, num_avg, num_iter)
+    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 400})
+    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 300})
+    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 200})
+    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 100})
 
-    # plotter.finish()
+    plotter.finish()
 
+    plotter.init_plot("SVD Convergence", "number of iterations", "residual", "bibd_13_6") 
     
     test(baseline_svd_convergence, plotter, "bibd_13_6", seed, num_avg, num_iter)
     test(jl_reduced_svd_convergence, plotter, "bibd_13_6", seed, num_avg, num_iter, {"d" : 1500})

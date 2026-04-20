@@ -5,12 +5,12 @@ For SVD functions
 import numpy as np
 from scipy.linalg import norm # 2-norm by default
 
-def get_top_right(A, u):
+def v_from_u(A, u):
     """
-    A - matrix (mxn) s.t. m >= n
-    u - top left eigenvector of A (m-dimensional)
+    A - matrix (nxm) s.t. n >= m
+    u - top left eigenvector of A (n-dimensional)
 
-    RETURN: v - n-dimensional top right eigenvector of A
+    RETURN: v - m-dimensional top right eigenvector of A
 
     Get the top right eigenvector of A, given the top left eigenvector of A
     NOTE: 
@@ -18,7 +18,7 @@ def get_top_right(A, u):
     """
     #TODO: DEBUG and use this for consistent initialization 
     # (i.e. every iteration starts w/ same residue)
-    
+
     s = norm(A.T @ u)
     v = A.T @ u / s
     return v
@@ -27,14 +27,14 @@ def get_top_right(A, u):
 
 def topsing(v0, A, maxiter=10):
     """
-    v0      - an initial guess for the top right eigenvector (n-dimensional)
-    A       - A matrix (mxn) s.t. m is less than or equal to n (for relative 
+    v0      - an initial guess for the top right eigenvector (m-dimensional)
+    A       - A matrix (nxm) s.t. n is less than or equal to m (for relative 
               efficiency)
     maxiter - how many iterations of SVD? 
 
-    RETURN: u - top left eigenvector approximation (m-dimensional)
+    RETURN: u - top left eigenvector approximation (n-dimensional)
             s - singular value (akin to eigenvalue)
-            v - top right eigenvector approximation (n-dimensional)
+            v - top right eigenvector approximation (m-dimensional)
     Adapted from section "4.4.2. Computing the top singular vector", found here:
     https://mmids-textbook.github.io/chap04_svd/04_power/roch-mmids-svd-power.html
     """

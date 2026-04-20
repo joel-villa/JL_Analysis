@@ -12,20 +12,25 @@ import numpy as np
 from ..util.eig_functs import euclidean_dist
 from ..util.scikit_jl import jl_gaussian
 from ..util.svd_util import topsing
+from ..util.svd_util import v_from_u
 
-def baseline_svd_convergence(A, u_star, num_iter, seed):
+def baseline_svd_convergence(A, u_0, u_star, num_iter, seed):
     """
     The baseline SVD convergence
-    TODO: u0
     """
-    rng = np.random.default_rng(seed=seed)
-    v0 = rng.normal(0,1,np.shape(A)[1])
-    v = v0.copy()
+
+    v =  v_from_u(A, u_0)
 
     xs = np.zeros(num_iter)
     ys = np.zeros(num_iter)
 
-    for i in range(num_iter):
+    ys[0] = euclidean_dist(u_0, u_star)
+    xs[0] = 0
+
+    print(f"ys[0] = {ys[0]}")
+
+
+    for i in range(1, num_iter):
         # NOTE: using scikit-learn -> top left eig (u) is of significance
         u, _, v = topsing(v0=v,
                           A=A, 
@@ -39,25 +44,30 @@ def baseline_svd_convergence(A, u_star, num_iter, seed):
 
     # print(f"xs: {xs}")
     # print(f"ys: {ys}")
+
+    print(f"ys[0] = {ys[0]}")
     
     return xs, ys, f"standard svd {A.shape}"
 
-def jl_reduced_svd_convergence(A, u_star, num_iter, seed, d):
+def jl_reduced_svd_convergence(A, u_0, u_star, num_iter, seed, d):
     """
     Convergence of SVD on a JL-dimensionally reduced version of A
-    TODO: u0
     """
+
+    
 
     xs = np.zeros(num_iter)
     ys = np.zeros(num_iter)
 
     reduced_A = jl_gaussian(A, d=d, seed=seed, eps=0.99)
 
-    rng = np.random.default_rng(seed=seed)
-    v0 = rng.normal(0,1,np.shape(reduced_A)[1])
-    v = v0.copy()
+    v =  v_from_u(reduced_A, u_0)
 
-    for i in range(num_iter):
+    ys[0] = euclidean_dist(u_0, u_star)
+    print(f"ys[0] = {ys[0]}")
+    xs[0] = 0
+
+    for i in range(1, num_iter):
         # NOTE: using scikit-learn -> top left eig (u) is of significance
 
         u, _, v = topsing(v0=v,
@@ -72,6 +82,8 @@ def jl_reduced_svd_convergence(A, u_star, num_iter, seed, d):
 
     # print(f"xs: {xs}")
     # print(f"ys: {ys}")
+
+    print(f"ys[0] = {ys[0]}")
     
     return xs, ys, f"jl-reduced svd {reduced_A.shape}"
 
