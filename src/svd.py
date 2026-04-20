@@ -49,31 +49,23 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     print("Finished test")
 
 if __name__ == "__main__":
-    #TODO: AHHHHH, please work gosh dang it man (debug this, and make cleaner)
     plotter = Plotter(save_fig=True, show_fig=True)
     # mats    = ["494_bus"]
     seed    = 10
     num_avg = 1
     num_iter = 32
 
-    plotter.init_plot("SVD Convergence", "number of iterations", "residual", "494_bus") 
-    
-    test(baseline_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter)
-    # test(baseline_svd_convergence, plotter, "1138_bus", seed, num_avg, num_iter)
-    # test(baseline_svd_convergence, plotter, "662_bus", seed, num_avg, num_iter)
-    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 400})
-    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 300})
-    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 200})
-    test(jl_reduced_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter, {"d" : 100})
+    mats = ["494_bus", "1138_bus", "bibd_13_6", "bcsstk08"]
+    ps = [20, 40, 60, 80]
 
-    plotter.finish()
+    for mat in mats:
+        plotter.init_plot("SVD Convergence", "number of iterations", "residual", mat) 
 
-    plotter.init_plot("SVD Convergence", "number of iterations", "residual", "bibd_13_6") 
-    
-    test(baseline_svd_convergence, plotter, "bibd_13_6", seed, num_avg, num_iter)
-    test(jl_reduced_svd_convergence, plotter, "bibd_13_6", seed, num_avg, num_iter, {"d" : 1500})
-    test(jl_reduced_svd_convergence, plotter, "bibd_13_6", seed, num_avg, num_iter, {"d" : 1000})
-    test(jl_reduced_svd_convergence, plotter, "bibd_13_6", seed, num_avg, num_iter, {"d" : 500})
-    test(jl_reduced_svd_convergence, plotter, "bibd_13_6", seed, num_avg, num_iter, {"d" : 200})
+        test(baseline_svd_convergence, plotter, mat, seed, num_avg, num_iter)
 
-    plotter.finish()
+        for p in ps:
+            args = {"p": p}
+            test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args)
+
+        plotter.finish()
+

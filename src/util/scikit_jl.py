@@ -3,7 +3,20 @@ For interfacing with scikit learn's JL reduction
 """
 
 from sklearn import random_projection
+from math import ceil 
 
+def percent_reduce(n, p):
+     """
+     n - an integer (orignal dimension)
+     p - the percent to reduce n by
+
+     Reduce dimension n by p percent
+     """
+
+     reduce_ammount = ceil(n * p * 0.01)
+     d = n - reduce_ammount
+     
+     return d
 
 def check_valid_dimensions(A):
     if (A.shape[0] > A.shape[1]):

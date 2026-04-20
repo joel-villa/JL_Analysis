@@ -11,6 +11,7 @@ import numpy as np
 
 from ..util.eig_functs import euclidean_dist
 from ..util.scikit_jl import jl_gaussian
+from ..util.scikit_jl import percent_reduce
 from ..util.svd_util import topsing
 from ..util.svd_util import v_from_u
 
@@ -27,9 +28,6 @@ def baseline_svd_convergence(A, u_0, u_star, num_iter, seed):
     ys[0] = euclidean_dist(u_0, u_star)
     xs[0] = 0
 
-    print(f"ys[0] = {ys[0]}")
-
-
     for i in range(1, num_iter):
         # NOTE: using scikit-learn -> top left eig (u) is of significance
         u, _, v = topsing(v0=v,
@@ -41,11 +39,6 @@ def baseline_svd_convergence(A, u_0, u_star, num_iter, seed):
         euc_dist = euclidean_dist(u, u_star)
         ys[i] = euc_dist
         xs[i] = i
-
-    # print(f"xs: {xs}")
-    # print(f"ys: {ys}")
-
-    print(f"ys[0] = {ys[0]}")
     
     return xs, ys, f"standard svd {A.shape}"
 
@@ -64,7 +57,6 @@ def jl_reduced_svd_convergence(A, u_0, u_star, num_iter, seed, d):
     v =  v_from_u(reduced_A, u_0)
 
     ys[0] = euclidean_dist(u_0, u_star)
-    print(f"ys[0] = {ys[0]}")
     xs[0] = 0
 
     for i in range(1, num_iter):
@@ -80,12 +72,17 @@ def jl_reduced_svd_convergence(A, u_0, u_star, num_iter, seed, d):
         ys[i] = euc_dist
         xs[i] = i
 
-    # print(f"xs: {xs}")
-    # print(f"ys: {ys}")
-
-    print(f"ys[0] = {ys[0]}")
-    
     return xs, ys, f"jl-reduced svd {reduced_A.shape}"
+
+def jl_percent_reduced(A, u_0, u_star, num_iter, seed, p):
+    """
+    Convergence of SVD on a JL-dimensionally reduced version of A
+    """
+
+    d = percent_reduce(A.shape[1], p)
+    xs, ys, _ = jl_reduced_svd_convergence(A, u_0, u_star, num_iter, seed, d)
+    
+    return xs, ys, f"jl-reduced svd ({p}%)"
 
 # def svds_convergence(A, v0, v_star, num_iter, seed):
 #     """
