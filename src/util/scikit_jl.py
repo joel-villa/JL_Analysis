@@ -14,12 +14,12 @@ def check_valid_dimensions(A):
     
 def jl_gaussian(X, d, seed, eps=0.9):
     """
-    X - original matrix
+    X - original matrix (nxm)
     d - desired dimension
     seed - for repeatable randomness
     eps - allowable error
 
-    RETURN: reduced X
+    RETURN: reduced X (nxd), i.e. less columns
 
     Reduce dimensions of X, via scikit learn's gaussian method
     """
