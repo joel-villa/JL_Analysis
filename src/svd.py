@@ -38,9 +38,8 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter):
     
     ys = ys / num_avg
 
-    plotter.add_to_plot(xs, ys, label=label)
+    plotter.add_to_plot(xs, ys, label=f"{label} ({mat_name})")
     print("Finished test")
-    plotter.finish()
 
 if __name__ == "__main__":
     #TODO: AHHHHH, please work gosh dang it man (debug this, and make cleaner)
@@ -50,6 +49,10 @@ if __name__ == "__main__":
     num_avg = 1
     num_iter = 64
 
-    plotter.init_plot("title", "x-label", "y-label", "save_name") 
+    plotter.init_plot("SVD Convergence", "number of iterations", "residual", "svd_convergence") 
     
     test(baseline_svd_convergence, plotter, "494_bus", seed, num_avg, num_iter)
+    test(baseline_svd_convergence, plotter, "1138_bus", seed, num_avg, num_iter)
+    test(baseline_svd_convergence, plotter, "662_bus", seed, num_avg, num_iter)
+
+    plotter.finish()
