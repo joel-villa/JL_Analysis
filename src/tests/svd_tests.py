@@ -103,6 +103,7 @@ def multi_jl_svd(A, u_0, u_star, num_iter, seed, d, step_size):
         if (i % step_size == 0):
             # Randomly regenerate A
             reduced_A = jl_gaussian(A, d=d, seed=seed*i, eps=0.99)
+            v = v_from_u(reduced_A, u)
 
         # NOTE: using scikit-learn -> top left eig (u) is of significance
 
