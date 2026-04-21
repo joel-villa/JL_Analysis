@@ -36,10 +36,6 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
         u0 = rng.normal(0,1,np.shape(A)[0])
         u0 = u0 / norm(u0)
 
-        print(u0.shape)
-        print(u0)
-        print(A.shape)
-
         xs, ys_i, label = funct(A, u0, u_star, num_iter, seed=seed_i, **args)
         ys += ys_i
     
@@ -59,13 +55,15 @@ if __name__ == "__main__":
     ps = [20, 40, 60, 80]
 
     for mat in mats:
-        plotter.init_plot("SVD Convergence", "number of iterations", "residual", mat) 
+        plotter.init_plot("SVD Convergence", "number of iterations", "residual", f"{mat}_multi") 
 
         test(baseline_svd_convergence, plotter, mat, seed, num_avg, num_iter)
 
         for p in ps:
-            args = {"p": p}
-            test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args)
+            args1 = {"p": p}
+            args2 = {"p": p, "step_size": 8}
+            test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
+            test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
 
         plotter.finish()
 

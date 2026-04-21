@@ -84,6 +84,50 @@ def jl_percent_reduced(A, u_0, u_star, num_iter, seed, p):
     
     return xs, ys, f"jl-reduced svd ({p}%)"
 
+def multi_jl_svd(A, u_0, u_star, num_iter, seed, d, step_size):
+    """
+    Convergence of SVD on a JL-dimensionally reduced version of A
+    """
+
+    xs = np.zeros(num_iter)
+    ys = np.zeros(num_iter)
+
+    reduced_A = jl_gaussian(A, d=d, seed=seed, eps=0.99)
+
+    v =  v_from_u(reduced_A, u_0)
+
+    ys[0] = euclidean_dist(u_0, u_star)
+    xs[0] = 0
+
+    for i in range(1, num_iter):
+        if (i % step_size == 0):
+            # Randomly regenerate A
+            reduced_A = jl_gaussian(A, d=d, seed=seed*i, eps=0.99)
+
+        # NOTE: using scikit-learn -> top left eig (u) is of significance
+
+        u, _, v = topsing(v0=v,
+                          A=reduced_A, 
+                          maxiter=1)
+        
+        # v = v.flatten() # make v 1D rather than 2D: (x,) rather than (x,1)
+
+        euc_dist = euclidean_dist(u, u_star)
+        ys[i] = euc_dist
+        xs[i] = i
+
+    return xs, ys, f"reduced to {reduced_A.shape}, swapping every {step_size}"
+
+def multi_jl_p_reduce(A, u_0, u_star, num_iter, seed, p, step_size):
+    """
+    Convergence of SVD on a JL-dimensionally reduced version of A
+    """
+
+    d = percent_reduce(A.shape[1], p)
+    xs, ys, _ = multi_jl_svd(A, u_0, u_star, num_iter, seed, d, step_size)
+    
+    return xs, ys, f"reduced {p}%, swapping every {step_size}"
+
 # def svds_convergence(A, v0, v_star, num_iter, seed):
 #     """
 #     The baseline SVD convergence
