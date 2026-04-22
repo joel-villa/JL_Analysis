@@ -53,18 +53,20 @@ if __name__ == "__main__":
     num_iter = 8
 
     mats = ["494_bus", "1138_bus", "bibd_13_6", "bcsstk08"]
+    types = ["jl_sparse", "jl_gaussian"]
     ps = [40]
 
     for mat in mats:
-        plotter.init_plot(f"SVD Convergence of {mat}", "number of iterations", "residual", f"{mat}_multi_8_iter_40p",grid_on=True) 
+        plotter.init_plot(f"SVD Convergence of {mat}", "number of iterations", "residual", f"{mat}_sparse_swap",grid_on=True) 
 
         test(baseline_svd_convergence, plotter, mat, seed, num_avg, num_iter)
-
+        
         for p in ps:
-            args1 = {"p": p}
-            args2 = {"p": p, "step_size": 2}
-            test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
-            test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
+            for type in types:
+                args1 = {"p": p, "type" : type}
+                args2 = {"p": p, "step_size": 2, "type" : type}
+                test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
+                test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
 
         plotter.finish()
 
