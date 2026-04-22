@@ -8,6 +8,7 @@ from Sparsification_Research.src.Plotter import Plotter
 import numpy as np
 from .tests.svd_tests import *
 from .util.eig_functs import *
+from .tests.svd_sparse import sparse_svd
 
 def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     """
@@ -41,7 +42,7 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     
     ys = ys / num_avg
 
-    plotter.add_to_plot(xs, ys, label=f"{label} ({mat_name})")
+    plotter.add_to_plot(xs, ys, label=label)
     print("Finished test")
 
 if __name__ == "__main__":
@@ -49,19 +50,19 @@ if __name__ == "__main__":
     # mats    = ["494_bus"]
     seed    = 10
     num_avg = 1
-    num_iter = 32
+    num_iter = 8
 
     mats = ["494_bus", "1138_bus", "bibd_13_6", "bcsstk08"]
-    ps = [20, 40, 60, 80]
+    ps = [40]
 
     for mat in mats:
-        plotter.init_plot("SVD Convergence", "number of iterations", "residual", f"{mat}_multi") 
+        plotter.init_plot(f"SVD Convergence of {mat}", "number of iterations", "residual", f"{mat}_multi_8_iter_40p",grid_on=True) 
 
         test(baseline_svd_convergence, plotter, mat, seed, num_avg, num_iter)
 
         for p in ps:
             args1 = {"p": p}
-            args2 = {"p": p, "step_size": 8}
+            args2 = {"p": p, "step_size": 2}
             test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
             test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
 
