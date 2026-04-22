@@ -29,7 +29,7 @@ def jl_top_eig_pres(A, ps, seed):
 
     return ps, ys
 
-def scikit_eig_percent_reduce(A, ps, seed):
+def scikit_eig_percent_reduce(A, ps, seed, type="jl_gaussian"):
     """
     Test how well johnson lindenstrauss maintains top eigenvector of 
     sparse matrices for variable epsilon (using sklearn gaussian projection
@@ -41,6 +41,13 @@ def scikit_eig_percent_reduce(A, ps, seed):
     RETURN: xs - reduced dimension (or maybe epsilon-TBD)
             ys - eigenvector preservation
     """
+
+    match type:
+        case "jl_gaussian":
+            reduct_funct = jl_gaussian
+        case _:
+            reduct_funct = jl_sparse
+
     ys = np.zeros(np.shape(ps))
     xs = np.zeros(np.shape(ps))
 
@@ -52,7 +59,7 @@ def scikit_eig_percent_reduce(A, ps, seed):
             print(f"WARNING: reduced dimension {d} is too small, defaulting to 2")
             d = 2
         
-        A_reduced = jl_gaussian(A, d=d, eps=0.9, seed=seed)
+        A_reduced = reduct_funct(A, d=d, eps=0.9, seed=seed)
 
         diff = diff_in_top_eigs(A, A_reduced)
         ys[i] = diff

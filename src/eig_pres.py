@@ -8,7 +8,7 @@ from .tests.eig_tests import *
 
 import numpy as np
 
-def test(funct, plotter, mats, seed, num_avg, input):
+def test(funct, plotter, mats, seed, num_avg, input, args):
     """
     Test the given function from tests.py 
     
@@ -30,7 +30,7 @@ def test(funct, plotter, mats, seed, num_avg, input):
 
         for i in range(num_avg):
             seed_i = seed + i 
-            xs, ys_i = funct(A, input, seed=seed_i)
+            xs, ys_i = funct(A, input, seed=seed_i, **args)
             ys += ys_i
 
         ys = ys / num_avg
@@ -125,10 +125,10 @@ def run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg):
     """
     Given a plotter, run the associated test
     """
-    plotter.init_plot(title="top eigenvector preservation of normalized JL",
+    plotter.init_plot(title="top eigenvector preservation of sparse JL",
                       x_label="percent dimensionality reduction",
                       y_label="norm of difference in top eigenvectors",
-                      save_name="scikit_eig_percent_reduce")
+                      save_name="scikit_eig_percent_reduce_sparse")
     function = scikit_eig_percent_reduce
 
     ps = [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]
@@ -138,7 +138,8 @@ def run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg):
          mats=mats,
          seed=seed,
          num_avg=num_avg,
-         input=ps)
+         input=ps,
+         args={"type":"jl_sparse"})
 
 
 if __name__ == '__main__':
