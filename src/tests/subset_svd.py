@@ -134,7 +134,7 @@ def subset_svd_swap(A, u_0, u_star, num_iter, seed, d, step_size):
         ys[i] = euc_dist
         xs[i] = i
 
-    return xs, ys, f"random column subset: {A_reduced.shape}"
+    return xs, ys, f"column subset (swapping every {step_size}): {A_reduced.shape}"
 
 def percent_subset_svd_swap(A, u_0, u_star, num_iter, seed, p, step_size):
     """
