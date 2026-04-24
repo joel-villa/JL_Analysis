@@ -10,6 +10,7 @@ from .tests.svd_tests import *
 from .util.eig_functs import *
 from .tests.svd_sparse import sparse_svd
 from .tests.subset_svd import percent_subset_svd
+from .tests.subset_svd import percent_subset_svd_swap
 
 def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     """
@@ -58,14 +59,15 @@ if __name__ == "__main__":
     # mats = ["bcspwr06"]
     # mats = ["bcsstk07", "bcsstk19"]
     #SOME THAT CONVERGE FAST: ["beause", "bibd_13_6"]
-    # mats = ["494_bus", "1138_bus", "bcsstk08", "bcsstk07", "bcsstk19", "bcsstm12", "bcspwr06"]
+    mats = ["494_bus", "1138_bus", "bcsstk08", "bcsstk07", "bcsstk19", "bcsstm12", "bcspwr06"]
     # mats = ["bcsstk10"]
-    mats = ["gr_30_30"]
+    # mats = ["gr_30_30"]
     # mats = ["bcsstm12", "beause", "bcspwr06"]
 
 
     types = ["jl_gaussian", "jl_sparse"]
-    ps = [90, 98]
+    ps = [90]
+    step_size = 8
 
     for mat in mats:
         plotter.init_plot(f"SVD Convergence of {mat}", "number of iterations", "residual", f"{mat}_sparse_swap",grid_on=True) 
@@ -75,10 +77,11 @@ if __name__ == "__main__":
         for p in ps:
             for type in types:
                 args1 = {"p": p, "type" : type}
-                args2 = {"p": p, "step_size": 8, "type" : type}
+                args2 = {"p": p, "step_size": step_size, "type" : type}
                 # test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
-                # test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
+                test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
                 test(percent_subset_svd, plotter, mat, seed, num_avg, num_iter, {"p": p})
+                test(percent_subset_svd_swap, plotter, mat, seed, num_avg, num_iter, {"p": p, "step_size" : step_size})
 
         plotter.finish()
 
