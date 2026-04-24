@@ -9,6 +9,7 @@ import numpy as np
 from .tests.svd_tests import *
 from .util.eig_functs import *
 from .tests.svd_sparse import sparse_svd
+from .tests.subset_svd import percent_subset_svd
 
 def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     """
@@ -27,6 +28,7 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
 
     print(mat_name)
     ys = np.zeros(num_iter)
+    ys_i = np.zeros(num_iter)
 
     u_star =  top_left(A)
     
@@ -46,15 +48,24 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     print("Finished test")
 
 if __name__ == "__main__":
-    plotter = Plotter(save_fig=True, show_fig=True)
+    plotter = Plotter(save_fig=False, show_fig=True)
     # mats    = ["494_bus"]
     seed    = 10
     num_avg = 1
-    num_iter = 8
+    num_iter = 64
 
-    mats = ["494_bus", "1138_bus", "bibd_13_6", "bcsstk08"]
-    types = ["jl_sparse", "jl_gaussian"]
-    ps = [40]
+    # mats = ["494_bus", "1138_bus", "bibd_13_6", "bcsstk08"]
+    # mats = ["bcspwr06"]
+    # mats = ["bcsstk07", "bcsstk19"]
+    #SOME THAT CONVERGE FAST: ["beause", "bibd_13_6"]
+    # mats = ["494_bus", "1138_bus", "bcsstk08", "bcsstk07", "bcsstk19", "bcsstm12", "bcspwr06"]
+    # mats = ["bcsstk10"]
+    mats = ["gr_30_30"]
+    # mats = ["bcsstm12", "beause", "bcspwr06"]
+
+
+    types = ["jl_gaussian", "jl_sparse"]
+    ps = [90, 98]
 
     for mat in mats:
         plotter.init_plot(f"SVD Convergence of {mat}", "number of iterations", "residual", f"{mat}_sparse_swap",grid_on=True) 
@@ -64,9 +75,10 @@ if __name__ == "__main__":
         for p in ps:
             for type in types:
                 args1 = {"p": p, "type" : type}
-                args2 = {"p": p, "step_size": 2, "type" : type}
-                test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
-                test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
+                args2 = {"p": p, "step_size": 8, "type" : type}
+                # test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
+                # test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
+                test(percent_subset_svd, plotter, mat, seed, num_avg, num_iter, {"p": p})
 
         plotter.finish()
 
