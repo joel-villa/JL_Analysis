@@ -83,7 +83,7 @@ if __name__ == "__main__":
             for type in types:
                 args1 = {"p": p, "type" : type}
                 args2 = {"p": p, "step_size": step_size, "type" : type}
-                # test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
+                test(jl_percent_reduced, plotter, mat, seed, num_avg, num_iter, args1)
                 test(multi_jl_p_reduce, plotter, mat, seed, num_avg, num_iter, args2)
             test(percent_subset_svd, plotter, mat, seed, num_avg, num_iter, {"p": p})
             if (mat == "impcol_d"):
