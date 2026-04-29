@@ -124,9 +124,11 @@ if __name__ == '__main__':
 
         test(baseline_svd_convergence, plotter, mat, seed, num_avg, num_iter)
         
-        for i in range(5):
-            for type in types:
+        for type in types:
+            for i in range(5):
                 test(jl_percent_reduced, plotter, mat, seed * i + i, num_avg, num_iter, {"p": p, "type" : type})
+            
+        for i in range(5):
             test(percent_subset_svd, plotter, mat, seed * i + i, num_avg, num_iter, {"p": p})
 
         plotter.finish()
