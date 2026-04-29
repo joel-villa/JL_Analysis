@@ -48,7 +48,7 @@ def test(funct, plotter, mat_name, seed, num_avg, num_iter, args={}):
     plotter.add_to_plot(xs, ys, label=label)
     print("Finished test")
 
-if __name__ == "__main__":
+def main_swap():
     # mats    = ["494_bus"]
     seed    = 10
     num_avg = 1
@@ -90,6 +90,44 @@ if __name__ == "__main__":
                 # impcol_d gets "infs" with percent_subset_svd_swap, skipping it for now
                 continue 
             test(percent_subset_svd_swap, plotter, mat, seed, num_avg, num_iter, {"p": p, "step_size" : step_size})
+
+        plotter.finish()
+
+if __name__ == '__main__':
+    # mats    = ["494_bus"]
+    seed    = 10
+    num_avg = 1
+    num_iter = 64
+
+
+    # SOME MATS THAT SHOW GOOD BEHVIOR: ["bcsstk07", "bcsstk19", "bcsstm07", "impcol_d"]
+    mats = ["bcsstk07", "bcsstk19", "bcsstm07", "impcol_d"]
+    """These mats seem to imperically have this in common: small spectral gap,
+      and large eigenvalues
+      TODO: prove why this may be the case? 
+      TODO: an itterative approach which will use theses matrix approximations 
+            to converge faster"""
+
+
+    types = ["jl_gaussian", "jl_sparse"]
+    p = 97
+    step_size = 8
+
+    plotter = Plotter(save_fig=True, show_fig=True)
+
+    for mat in mats:
+        plotter.init_plot(title=f"SVD Convergence of {mat}", 
+                          x_label="number of iterations",
+                          y_label="residual", 
+                          save_name=f"{mat}_97_p_reduced_no_swap",
+                          grid_on=True) 
+
+        test(baseline_svd_convergence, plotter, mat, seed, num_avg, num_iter)
+        
+        for i in range(5):
+            for type in types:
+                test(jl_percent_reduced, plotter, mat, seed * i + i, num_avg, num_iter, {"p": p, "type" : type})
+            test(percent_subset_svd, plotter, mat, seed * i + i, num_avg, num_iter, {"p": p})
 
         plotter.finish()
 
