@@ -121,32 +121,55 @@ def test_two():
 
     # plt.show()
     plotter.finish()
-def run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg):
+def run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg, type="jl_gaussian"):
     """
     Given a plotter, run the associated test
     """
-    plotter.init_plot(title="top eigenvector preservation of sparse JL",
+    # plotter.init_plot(title="top eigenvector preservation of gaussian JL",
+    match type:
+        case "jl_gaussian":
+            plotter.init_plot(title="top eigenvector preservation of gaussian JL",
                       x_label="percent dimensionality reduction",
                       y_label="norm of difference in top eigenvectors",
-                      save_name="scikit_eig_percent_reduce_sparse")
+                      save_name="eig_pres_gaussian")
+        case "jl_sparse":
+            plotter.init_plot(title="top eigenvector preservation of sparse JL",
+                      x_label="percent dimensionality reduction",
+                      y_label="norm of difference in top eigenvectors",
+                      save_name="eig_pres_sparse")
+        case _:
+            raise SyntaxError(f"type must be either jl_gaussian or jl_sparse, not {type}")
+    
     function = scikit_eig_percent_reduce
 
-    ps = [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]
+    ps = [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 97, 99]
 
-    test(funct=function, 
-         plotter=plotter,
-         mats=mats,
-         seed=seed,
-         num_avg=num_avg,
-         input=ps,
-         args={"type":"jl_sparse"})
-
+    match type:
+        case "jl_gaussian":
+            test(funct=function, 
+                 plotter=plotter,
+                 mats=mats,
+                 seed=seed,
+                 num_avg=num_avg,
+                 input=ps,
+                 args={"type":"jl_gaussian"})
+        case _: 
+            test(funct=function, 
+                 plotter=plotter,
+                 mats=mats,
+                 seed=seed,
+                 num_avg=num_avg,
+                 input=ps,
+                 args={"type":"jl_sparse"})
 
 if __name__ == '__main__':
-    plotter = Plotter(save_fig=False, show_fig=True)
+    plotter = Plotter(save_fig=True, show_fig=True)
     # mats    = ["494_bus"]
-    mats    = ["494_bus", "1138_bus", "bibd_11_5", "bibd_13_6", "bcsstk08"]
-    seed    = 10
-    num_avg = 1
+    mats    = ["494_bus", "1138_bus", "bibd_11_5", "bibd_13_6",]
+    mats    = ["bcsstk07", "bcsstk19", "bcsstm07", "impcol_d"]
 
-    run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg)
+    seed    = 10
+    num_avg = 5
+
+    run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg, type="jl_gaussian")
+    run_scikit_eig_percent_reduce(plotter, mats, seed, num_avg, type="jl_sparse")
